@@ -1,13 +1,16 @@
 # Barfs on supposed-to-fail parts of the testsuite
 %define _python_bytecompile_build 0
 
-%define docver 3.7.5
-%define dirver 3.7
+# Python modules aren't linked to libpython%{dirver}
+%global _disable_ld_no_undefined 1
+
+%define docver 3.8.0
+%define dirver 3.8
 %define familyver 3
 
 %define api %{dirver}
 %define major 1
-%define libname %mklibname python %{api}m %{major}
+%define libname %mklibname python %{api} %{major}
 %define devname %mklibname python -d
 
 %define pre %{nil}
@@ -24,11 +27,10 @@
 # * but next package lead to unpackaged pip files 
 # let's disable pip
 %bcond_with pip
-%bcond_without abi_m
 
 Summary:	An interpreted, interactive object-oriented programming language
 Name:		python
-Version:	3.7.5
+Version:	3.8.0
 %if "%{pre}" != ""
 Release:	0.%{pre}.1
 %else
@@ -51,7 +53,7 @@ Patch5:		python-3.3.0b1-test-posix_fadvise.patch
 Patch6:		Python-3.7.0b1-_ctypes-requires-libdl.patch
 Patch7:		python-3.6.2-clang-5.0.patch
 Patch8:		http://pkgs.fedoraproject.org/cgit/rpms/python3.git/plain/00205-make-libpl-respect-lib64.patch
-Patch9:		python-3.7.0b1-atomic-c++-buildfix.patch
+Patch9:		Python-3.8.0-c++.patch
 Patch10:	python-3.7.1-dont-build-testembed-with-c++.patch
 # 00173 #
 # Workaround for ENOPROTOOPT seen in bs within
@@ -222,14 +224,14 @@ This is only useful to test Python itself.
 %patch7 -p1 -b .libpl
 %patch8 -p1 -b .atomic~
 %patch9 -p1 -b .c++~
-%patch10 -p1
+%patch10 -p1 -b .p10~
 %patch173 -p1 -b .p173~
 %patch179 -p1 -b .p179~
 %patch183 -p1 -b .p183~
 %patch184 -p1 -b .p184~
-%patch500 -p1
-%patch501 -p1
-%patch502 -p1
+%patch500 -p1 -b .p500~
+%patch501 -p1 -b .p501~
+%patch502 -p1 -b .p502~
 
 # docs
 mkdir html
@@ -247,7 +249,7 @@ you can :
 EOF
 
 #   Remove embedded copy of libffi:
-for SUBDIR in darwin libffi_msvc libffi_osx ; do
+for SUBDIR in darwin libffi_osx ; do
   rm -r Modules/_ctypes/$SUBDIR || exit 1 ;
 done
 
@@ -259,14 +261,6 @@ rm -fr Modules/zlib
 %global optflags %{optflags} -O3
 
 rm -f Modules/Setup.local
-
-# fedya
-# if you drop ABIFLAGS
-# you got libpython-3.4-1.0.so lib
-# instead of libpython-3.4m-1.0.so lib
-%if !%{with abi_m}
-sed -e "s/ABIFLAGS=\"\${ABIFLAGS}.*\"/:/" -i configure.ac
-%endif
 
 export OPT="%{optflags} -g"
 
@@ -283,6 +277,8 @@ sed -i -e 's,-std=c99,,' configure.ac
 export PYTHONHASHSEED=0
 
 autoreconf -vfi
+# FIXME why is autodetection broken?
+export ax_cv_c_float_words_bigendian=no
 %configure	\
 %ifnarch %{riscv}
 		--without-gcc \
@@ -348,13 +344,9 @@ mkdir -p %{buildroot}%{_mandir}
 # Work around broken distutils having no idea about the need to link
 # python modules to libpython (it probably should get this information
 # from _sysconfigdata.py rather than parsing a Makefile?)
-%if %{with abi_m}
-cat >>%{buildroot}%{_libdir}/python%{dirver}/config-%{dirver}m/Makefile <<EOF
-%else
 cat >>%{buildroot}%{_libdir}/python%{dirver}/config-%{dirver}/Makefile <<EOF
-%endif
 
-Py_ENABLE_SHARED= 1
+Py_ENABLE_SHARED=1
 EOF
 
 # install pynche
@@ -523,8 +515,6 @@ find html -type f |xargs chmod 0644
 %{_bindir}/pydoc3*
 %{_bindir}/python
 %{_bindir}/python3*
-%{_bindir}/pyvenv
-%{_bindir}/pyvenv-%{dirver}
 %{_bindir}/2to3
 %{_bindir}/2to3-%{dirver}
 %exclude %{_bindir}/python*config
@@ -552,11 +542,7 @@ find html -type f |xargs chmod 0644
 %endif
 
 %files -n %{libname}
-%if %{with abi_m}
-%{_libdir}/libpython%{api}m.so.%{major}*
-%else
 %{_libdir}/libpython%{api}.so.%{major}*
-%endif
 
 %files -n %{devname}
 %{_libdir}/libpython*.so

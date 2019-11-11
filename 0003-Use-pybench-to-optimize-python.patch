@@ -1,27 +1,17 @@
-From 01cb505c0db61a8f858567fca8d5ac580d5d5d11 Mon Sep 17 00:00:00 2001
-From: William Douglas <william.douglas@intel.com>
-Date: Tue, 12 Jun 2018 18:50:08 +0000
-Subject: [PATCH 3/5] Use pybench to optimize python
-
-Use pybench to guide PGO.
----
- Makefile.pre.in | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/Makefile.pre.in b/Makefile.pre.in
-index 4c23c0e..baa1d0a 100644
---- a/Makefile.pre.in
-+++ b/Makefile.pre.in
-@@ -248,7 +248,7 @@ TCLTK_LIBS=	@TCLTK_LIBS@
- # The task to run while instrumented when building the profile-opt target.
- # We exclude unittests with -x that take a rediculious amount of time to
- # run in the instrumented training build or do not provide much value.
--PROFILE_TASK=-m test.regrtest --pgo
+diff -up Python-3.8.0/Makefile.pre.in.p501~ Python-3.8.0/Makefile.pre.in
+--- Python-3.8.0/Makefile.pre.in.p501~	2019-11-03 02:49:37.579704405 +0100
++++ Python-3.8.0/Makefile.pre.in	2019-11-03 02:50:03.107713212 +0100
+@@ -258,7 +258,8 @@ TCLTK_LIBS=	@TCLTK_LIBS@
+ # To speed up profile generation, we don't run the full unit test suite
+ # by default. The default is "-m test --pgo". To run more tests, use
+ # PROFILE_TASK="-m test --pgo-extended"
+-PROFILE_TASK=	@PROFILE_TASK@
++# PROFILE_TASK=	@PROFILE_TASK@
 +PROFILE_TASK_PYBENCH=$(srcdir)/Tools/pybench/pybench.py -n 20
  
  # report files for gcov / lcov coverage report
  COVERAGE_INFO=	$(abs_builddir)/coverage.info
-@@ -500,7 +500,7 @@ build_all_generate_profile:
+@@ -496,7 +497,7 @@ build_all_generate_profile:
  
  run_profile_task:
  	@ # FIXME: can't run for a cross build
@@ -30,6 +20,3 @@ index 4c23c0e..baa1d0a 100644
  
  build_all_merge_profile:
  	$(LLVM_PROF_MERGER)
--- 
-2.17.0
-
