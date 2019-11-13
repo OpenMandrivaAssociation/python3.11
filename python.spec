@@ -1,6 +1,9 @@
 # Barfs on supposed-to-fail parts of the testsuite
 %define _python_bytecompile_build 0
 
+# For some reason, python-test thinks it needs python 3.6 and 3.8
+%global __requires_exclude python\\(abi\\).*3\.6
+
 # Python modules aren't linked to libpython%{dirver}
 %global _disable_ld_no_undefined 1
 
