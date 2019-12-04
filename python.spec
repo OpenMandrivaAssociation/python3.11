@@ -58,6 +58,7 @@ Patch7:		python-3.6.2-clang-5.0.patch
 Patch8:		http://pkgs.fedoraproject.org/cgit/rpms/python3.git/plain/00205-make-libpl-respect-lib64.patch
 Patch9:		Python-3.8.0-c++.patch
 Patch10:	python-3.7.1-dont-build-testembed-with-c++.patch
+Patch11:	python-3.8.0-c++atomics.patch
 # 00173 #
 # Workaround for ENOPROTOOPT seen in bs within
 # test.test_support.bind_port()
@@ -228,6 +229,7 @@ This is only useful to test Python itself.
 %patch8 -p1 -b .atomic~
 %patch9 -p1 -b .c++~
 %patch10 -p1 -b .p10~
+%patch11 -p1 -b .p11~
 %patch173 -p1 -b .p173~
 %patch179 -p1 -b .p179~
 %patch183 -p1 -b .p183~
