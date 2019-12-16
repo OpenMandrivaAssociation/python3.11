@@ -16,7 +16,7 @@
 %define libname %mklibname python %{api} %{major}
 %define devname %mklibname python -d
 
-%define pre %{nil}
+%define pre rc1
 
 %ifarch %{ix86} %{x86_64} ppc
 %bcond_without valgrind
@@ -33,11 +33,11 @@
 
 Summary:	An interpreted, interactive object-oriented programming language
 Name:		python
-Version:	3.8.0
+Version:	3.8.1
 %if "%{pre}" != ""
 Release:	0.%{pre}.1
 %else
-Release:	2
+Release:	1
 %endif
 License:	Modified CNRI Open Source License
 Group:		Development/Python
