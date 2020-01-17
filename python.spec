@@ -37,7 +37,7 @@ Version:	3.8.1
 %if "%{pre}" != ""
 Release:	0.%{pre}.2
 %else
-Release:	1
+Release:	2
 %endif
 License:	Modified CNRI Open Source License
 Group:		Development/Python
@@ -59,6 +59,7 @@ Patch8:		http://pkgs.fedoraproject.org/cgit/rpms/python3.git/plain/00205-make-li
 Patch9:		Python-3.8.0-c++.patch
 Patch10:	python-3.7.1-dont-build-testembed-with-c++.patch
 Patch11:	python-3.8.0-c++atomics.patch
+Patch12:	0005-Improve-distutils-C-support.patch
 # 00173 #
 # Workaround for ENOPROTOOPT seen in bs within
 # test.test_support.bind_port()
