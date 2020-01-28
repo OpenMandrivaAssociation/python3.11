@@ -35,9 +35,9 @@ Summary:	An interpreted, interactive object-oriented programming language
 Name:		python
 Version:	3.8.1
 %if "%{pre}" != ""
-Release:	0.%{pre}.2
+Release:	0.%{pre}.1
 %else
-Release:	2
+Release:	3
 %endif
 License:	Modified CNRI Open Source License
 Group:		Development/Python
