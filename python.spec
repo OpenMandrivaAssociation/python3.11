@@ -7,8 +7,8 @@
 # Python modules aren't linked to libpython%{dirver}
 %global _disable_ld_no_undefined 1
 
-%define docver 3.8.1
-%define dirver 3.8
+%define docver 3.8.2rc1
+%define dirver %(echo %{version} |cut -d. -f1-2)
 %define familyver 3
 
 %define api %{dirver}
@@ -16,7 +16,7 @@
 %define libname %mklibname python %{api} %{major}
 %define devname %mklibname python -d
 
-%define pre %{nil}
+%define pre rc1
 
 %ifarch %{ix86} %{x86_64} ppc
 %bcond_without valgrind
@@ -33,11 +33,11 @@
 
 Summary:	An interpreted, interactive object-oriented programming language
 Name:		python
-Version:	3.8.1
+Version:	3.8.2
 %if "%{pre}" != ""
 Release:	0.%{pre}.1
 %else
-Release:	3
+Release:	1
 %endif
 License:	Modified CNRI Open Source License
 Group:		Development/Python
