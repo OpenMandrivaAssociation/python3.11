@@ -455,6 +455,10 @@ ln -s python3 %{buildroot}%{_bindir}/python
 ln -s pydoc3 %{buildroot}%{_bindir}/pydoc
 ln -s python3-config %{buildroot}%{_bindir}/python-config
 
+# Install pathfix.py to bindir
+# See https://github.com/fedora-python/python-rpm-porting/issues/24
+cp -p Tools/scripts/pathfix.py %{buildroot}%{_bindir}/
+
 # Fix permissions on docs
 find html -type d |xargs chmod 0755
 find html -type f |xargs chmod 0644
@@ -519,6 +523,7 @@ find html -type f |xargs chmod 0644
 %{_libdir}/python%{dirver}/xmlrpc
 %{_bindir}/pydoc
 %{_bindir}/pydoc3*
+%{_bindir}/pathfix.py
 %{_bindir}/python
 %{_bindir}/python3*
 %{_bindir}/2to3
