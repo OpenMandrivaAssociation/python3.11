@@ -37,7 +37,7 @@ Version:	3.8.2
 %if "%{pre}" != ""
 Release:	0.%{pre}.1
 %else
-Release:	1
+Release:	2
 %endif
 License:	Modified CNRI Open Source License
 Group:		Development/Python
@@ -70,8 +70,6 @@ Patch183:	00178-dont-duplicate-flags-in-sysconfig.patch
 Patch184:	00201-fix-memory-leak-in-gdbm.patch
 # (tpg) ClearLinux patches
 Patch500:	0002-Skip-tests-TODO-fix-skips.patch
-Patch501:	0003-Use-pybench-to-optimize-python.patch
-Patch502:	0001-Add-pybench-for-pgo-optimization.patch
 
 BuildRequires:	blt
 BuildRequires:	pkgconfig(bzip2)
@@ -335,7 +333,7 @@ export TMP="/tmp" TMPDIR="/tmp"
 mkdir -p %{buildroot}%{_prefix}/lib/python%{dirver}
 
 # fix Makefile to get rid of reference to distcc
-perl -pi -e "/^CC=/ and s/distcc/gcc/" Makefile
+perl -pi -e "/^CC=/ and s/distcc/%{__cc}/" Makefile
 
 # set the install path
 echo '[install_scripts]' >setup.cfg
@@ -382,7 +380,6 @@ Terminal=false
 Type=Application
 Categories=Development;IDE;
 EOF
-
 
 cat > %{buildroot}%{_datadir}/applications/mandriva-%{name}-docs.desktop << EOF
 [Desktop Entry]
