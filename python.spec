@@ -7,7 +7,7 @@
 # Python modules aren't linked to libpython%{dirver}
 %global _disable_ld_no_undefined 1
 
-%define docver 3.8.2
+%define docver 3.8.3rc1
 %define dirver %(echo %{version} |cut -d. -f1-2)
 %define familyver 3
 
@@ -16,7 +16,7 @@
 %define libname %mklibname python %{api} %{major}
 %define devname %mklibname python -d
 
-%define pre %{nil}
+%define pre rc1
 
 %ifarch %{ix86} %{x86_64} ppc
 %bcond_without valgrind
@@ -33,11 +33,11 @@
 
 Summary:	An interpreted, interactive object-oriented programming language
 Name:		python
-Version:	3.8.2
+Version:	3.8.3
 %if "%{pre}" != ""
 Release:	0.%{pre}.1
 %else
-Release:	2
+Release:	1
 %endif
 License:	Modified CNRI Open Source License
 Group:		Development/Python
@@ -234,8 +234,6 @@ This is only useful to test Python itself.
 %patch183 -p1 -b .p183~
 %patch184 -p1 -b .p184~
 %patch500 -p1 -b .p500~
-%patch501 -p1 -b .p501~
-%patch502 -p1 -b .p502~
 
 # docs
 mkdir html
@@ -333,7 +331,7 @@ export TMP="/tmp" TMPDIR="/tmp"
 mkdir -p %{buildroot}%{_prefix}/lib/python%{dirver}
 
 # fix Makefile to get rid of reference to distcc
-perl -pi -e "/^CC=/ and s/distcc/%{__cc}/" Makefile
+perl -pi -e "/^CC=/ and s|distcc|%{__cc}|" Makefile
 
 # set the install path
 echo '[install_scripts]' >setup.cfg
