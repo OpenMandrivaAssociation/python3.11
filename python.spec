@@ -1,7 +1,13 @@
+# libpython is used by tdb, tdb is used by pulseaudio,
+# pulseaudio is used by wine
+%ifarch %{x86_64}
+%bcond_without compat32
+%endif
+
 # Barfs on supposed-to-fail parts of the testsuite
 %define _python_bytecompile_build 0
 
-# For some reason, python-test thinks it needs python 3.6 and 3.8
+# For some reason, python-test thinks it needs both python 3.6 and 3.8
 %global __requires_exclude python\\(abi\\).*3\.6
 
 # Python modules aren't linked to libpython%{dirver}
@@ -15,6 +21,8 @@
 %define major 1
 %define libname %mklibname python %{api} %{major}
 %define devname %mklibname python -d
+%define lib32name %mklib32name python %{api} %{major}
+%define dev32name %mklib32name python -d
 
 %define pre %{nil}
 
@@ -37,7 +45,7 @@ Version:	3.8.3
 %if "%{pre}" != ""
 Release:	0.%{pre}.1
 %else
-Release:	1
+Release:	2
 %endif
 License:	Modified CNRI Open Source License
 Group:		Development/Python
@@ -47,13 +55,15 @@ Source1:	http://www.python.org/ftp/python/doc/%{docver}/python-%{docver}-docs-ht
 Source2:	python3.macros
 Source3:	pybytecompile.macros
 Source100:	%{name}.rpmlintrc
+# The next 2 patches must be applied conditionally (lib64 only).
+# Added as Source: instead of Patch: so %%autosetup doesn't
+# pick them up.
+Source200:	https://src.fedoraproject.org/rpms/python3/raw/master/f/00001-rpath.patch
+Source201:	https://src.fedoraproject.org/rpms/python3/raw/master/f/00102-lib64.patch
 #Source4:	python-mode-1.0.tar.bz2
 Patch0:		python-3.6.1-module-linkage.patch
-Patch1:		https://src.fedoraproject.org/rpms/python3/raw/master/f/00001-rpath.patch
-Patch2:		https://src.fedoraproject.org/rpms/python3/raw/master/f/00102-lib64.patch
 Patch4:		Python-select-requires-libm.patch
 Patch5:		python-3.3.0b1-test-posix_fadvise.patch
-Patch6:		Python-3.7.0b1-_ctypes-requires-libdl.patch
 Patch7:		python-3.6.2-clang-5.0.patch
 Patch8:		http://pkgs.fedoraproject.org/cgit/rpms/python3.git/plain/00205-make-libpl-respect-lib64.patch
 Patch9:		Python-3.8.0-c++.patch
@@ -104,6 +114,13 @@ Conflicts:	tkinter3 < %{EVRD}
 Conflicts:	%{libname}-devel < 3.1.2-4
 Conflicts:	%{devname} < 3.2.2-3
 Conflicts:	python-pyxml
+%if %{with compat32}
+BuildRequires:	devel(libexpat)
+BuildRequires:	devel(libffi)
+BuildRequires:	devel(libz)
+BuildRequires:	devel(libbz2)
+BuildRequires:	devel(libncursesw)
+%endif
 
 # Used to be separate packages, bundled with core now
 %rename	python-ctypes
@@ -213,27 +230,44 @@ Requires:	%{name} = %{EVRD}
 The self-test suite for the Python interpreter.
 This is only useful to test Python itself.
 
-%prep
-%setup -qn Python-%{version}%{pre}
-%patch0 -p1 -b .link~
+%if %{with compat32}
+%package -n %{lib32name}
+Summary:	Shared libraries for Python %{version} (32-bit)
+Group:		System/Libraries
 
-%if "%{_lib}" == "lib64"
-%patch1 -p1 -b .lib64~
-%patch2 -p1 -b .p2~
+%description -n	%{lib32name}
+This packages contains Python shared object library.  Python is an
+interpreted, interactive, object-oriented programming language often
+compared to Tcl, Perl, Scheme or Java.
+
+%package -n %{dev32name}
+Summary:	The libraries and header files needed for Python development (32-bit)
+Group:		Development/Python
+Requires:	%{devname} = %{EVRD}
+Requires:	%{lib32name} = %{EVRD}
+
+%description -n	%{dev32name}
+The Python programming language's interpreter can be extended with
+dynamically loaded extensions and can be embedded in other programs.
+This package contains the header files and libraries needed to do
+these types of tasks.
+
+Install %{dev32name} if you want to develop Python extensions.  The
+python package will also need to be installed.  You'll probably also
+want to install the python-docs package, which contains Python
+documentation.
+
+%package -n python32-libs
+Summary:	Libraries for use with the 32-bit python interpreter
+Group:		Development/Python
+Requires:	%{lib32name} = %{EVRD}
+
+%description -n python32-libs
+Libraries for use with the 32-bit python interpreter
 %endif
-%patch4 -p1 -b .p4~
-%patch5 -p1 -b .p5~
-#patch6 -p1 -b .clang5~
-%patch7 -p1 -b .libpl
-%patch8 -p1 -b .atomic~
-%patch9 -p1 -b .c++~
-%patch10 -p1 -b .p10~
-%patch11 -p1 -b .p11~
-%patch173 -p1 -b .p173~
-%patch179 -p1 -b .p179~
-%patch183 -p1 -b .p183~
-%patch184 -p1 -b .p184~
-%patch500 -p1 -b .p500~
+
+%prep
+%autosetup -p1 -n Python-%{version}%{pre}
 
 # docs
 mkdir html
@@ -264,12 +298,10 @@ rm -fr Modules/zlib
 
 rm -f Modules/Setup.local
 
-export OPT="%{optflags} -g"
-
 # to fix curses module build
 # https://bugs.mageia.org/show_bug.cgi?id=6702
-export CFLAGS="%{optflags} -D_GNU_SOURCE -fPIC -fwrapv -I/usr/include/ncursesw"
-export CPPFLAGS="%{optflags} -D_GNU_SOURCE -fPIC -fwrapv -I/usr/include/ncursesw"
+#export CFLAGS="%{optflags} -D_GNU_SOURCE -fPIC -fwrapv -I/usr/include/ncursesw"
+#export CPPFLAGS="%{optflags} -D_GNU_SOURCE -fPIC -fwrapv -I/usr/include/ncursesw"
 
 # Python's configure adds -std=c99 even for c++, clang doesn't like that
 # combination at all
@@ -281,6 +313,40 @@ export PYTHONHASHSEED=0
 autoreconf -vfi
 # FIXME why is autodetection broken?
 export ax_cv_c_float_words_bigendian=no
+
+export CONFIGURE_TOP="$(pwd)"
+
+%if %{with compat32}
+# to fix curses module build
+# https://bugs.mageia.org/show_bug.cgi?id=6702
+#export CFLAGS="$(echo %{optflags} |sed -e 's,-m64,,;s,-mx32,,') -m32 -D_GNU_SOURCE -fPIC -fwrapv -I/usr/include/ncursesw"
+#export CPPFLAGS="$(echo %{optflags} |sed -e 's,-m64,,;s,-mx32,,') -m32 -D_GNU_SOURCE -fPIC -fwrapv -I/usr/include/ncursesw"
+mkdir build32
+cd build32
+%configure32 \
+		--without-ensurepip \
+		--with-system-expat \
+		--with-system-ffi \
+		--enable-optimizations \
+		--enable-shared \
+		--enable-ipv6 \
+		--with-computed-gotos
+unset CFLAGS CXXFLAGS CPPFLAGS RPM_OPT_FLAGS LDFLAGS RPM_LD_FLAGS
+make
+cd ..
+%endif
+
+# to fix curses module build
+# https://bugs.mageia.org/show_bug.cgi?id=6702
+export OPT="%{optflags} -g"
+export CFLAGS="%{optflags} -D_GNU_SOURCE -fPIC -fwrapv -I/usr/include/ncursesw"
+export CPPFLAGS="%{optflags} -D_GNU_SOURCE -fPIC -fwrapv -I/usr/include/ncursesw"
+
+patch -p1 -z .p200~ -b <%{S:200}
+patch -p1 -z .p201~ -b <%{S:201}
+
+mkdir build
+cd build
 %configure	\
 %ifnarch %{riscv}
 		--without-gcc \
@@ -312,7 +378,7 @@ export ax_cv_c_float_words_bigendian=no
 export TMP="/tmp" TMPDIR="/tmp"
 # This is used for bootstrapping - and we don't want to
 # require ourselves
-sed -i -e 's,env python,python2,' Python/makeopcodetargets.py
+sed -i -e 's,env python,python2,' ../Python/makeopcodetargets.py
 %ifarch riscv64
 # wipe 11 hours of tests
 rm -frv Lib/test/test_*
@@ -339,7 +405,10 @@ echo 'install_dir='"%{buildroot}%{_bindir}" >>setup.cfg
 
 # python is not GNU and does not know fsstd
 mkdir -p %{buildroot}%{_mandir}
-%make_install LN="ln -sf"
+%if %{with compat32}
+%make_install -C build32 LN="ln -sf"
+%endif
+%make_install -C build LN="ln -sf"
 
 (cd %{buildroot}%{_libdir}; ln -sf $(ls libpython%{api}*.so.*) libpython%{api}.so)
 
@@ -591,3 +660,15 @@ find html -type f |xargs chmod 0644
 %{_libdir}/python%{dirver}/lib2to3/tests
 %{_libdir}/python%{dirver}/tkinter/test
 %{_libdir}/python%{dirver}/unittest/test
+
+%if %{with compat32}
+%files -n %{lib32name}
+%{_prefix}/lib/libpython%{api}.so.%{major}*
+
+%files -n %{dev32name}
+%{_prefix}/lib/libpython*.so
+%{_prefix}/lib/pkgconfig/python*.pc
+
+%files -n python32-libs
+%{_prefix}/lib/python%{dirver}/lib-dynload
+%endif
