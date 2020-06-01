@@ -412,14 +412,6 @@ mkdir -p %{buildroot}%{_mandir}
 
 (cd %{buildroot}%{_libdir}; ln -sf $(ls libpython%{api}*.so.*) libpython%{api}.so)
 
-# Work around broken distutils having no idea about the need to link
-# python modules to libpython (it probably should get this information
-# from _sysconfigdata.py rather than parsing a Makefile?)
-cat >>%{buildroot}%{_libdir}/python%{dirver}/config-%{dirver}/Makefile <<EOF
-
-Py_ENABLE_SHARED=1
-EOF
-
 # install pynche
 cat << EOF > %{buildroot}%{_bindir}/pynche
 #!/bin/bash
