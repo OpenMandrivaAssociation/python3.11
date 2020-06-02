@@ -342,8 +342,10 @@ export OPT="%{optflags} -g"
 export CFLAGS="%{optflags} -D_GNU_SOURCE -fPIC -fwrapv -I/usr/include/ncursesw"
 export CPPFLAGS="%{optflags} -D_GNU_SOURCE -fPIC -fwrapv -I/usr/include/ncursesw"
 
+%if "%{_lib}" == "lib64"
 patch -p1 -z .p200~ -b <%{S:200}
 patch -p1 -z .p201~ -b <%{S:201}
+%endif
 
 mkdir build
 cd build
