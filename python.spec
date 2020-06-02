@@ -45,7 +45,7 @@ Version:	3.8.3
 %if "%{pre}" != ""
 Release:	0.%{pre}.1
 %else
-Release:	2
+Release:	3
 %endif
 License:	Modified CNRI Open Source License
 Group:		Development/Python
@@ -407,8 +407,19 @@ echo 'install_dir='"%{buildroot}%{_bindir}" >>setup.cfg
 mkdir -p %{buildroot}%{_mandir}
 %if %{with compat32}
 %make_install -C build32 LN="ln -sf"
+mv %{buildroot}%{_includedir}/python3.8/pyconfig.h %{buildroot}%{_includedir}/python3.8/pyconfig-32.h 
 %endif
 %make_install -C build LN="ln -sf"
+%if %{with compat32}
+mv %{buildroot}%{_includedir}/python3.8/pyconfig.h %{buildroot}%{_includedir}/python3.8/pyconfig-64.h 
+cat >%{buildroot}%{_includedir}/python3.8/pyconfig.h <<'EOF'
+#ifdef __i386__
+#include "pyconfig-32.h"
+#else
+#include "pyconfig-64.h"
+#endif
+EOF
+%endif
 
 (cd %{buildroot}%{_libdir}; ln -sf $(ls libpython%{api}*.so.*) libpython%{api}.so)
 
@@ -530,6 +541,9 @@ find html -type f |xargs chmod 0644
 %{_sysconfdir}/profile.d/*
 %config(noreplace) %{_sysconfdir}/pythonrc.py
 %{_includedir}/python*/pyconfig.h
+%if %{with compat32}
+%{_includedir}/python*/pyconfig-64.h
+%endif
 
 %dir %{_libdir}/python*/config-*
 %{_libdir}/python*/config*/Makefile
@@ -620,6 +634,10 @@ find html -type f |xargs chmod 0644
 %{_bindir}/python%{familyver}-config
 %{_libdir}/pkgconfig/python*.pc
 %exclude %{_includedir}/python*/pyconfig.h
+%if %{with compat32}
+%exclude %{_includedir}/python*/pyconfig-32.h
+%exclude %{_includedir}/python*/pyconfig-64.h
+%endif
 %exclude %{_libdir}/python*/config*/Makefile
 
 %files docs
@@ -658,6 +676,7 @@ find html -type f |xargs chmod 0644
 %{_prefix}/lib/libpython%{api}.so.%{major}*
 
 %files -n %{dev32name}
+%{_includedir}/python*/pyconfig-32.h
 %{_prefix}/lib/libpython*.so
 %{_prefix}/lib/pkgconfig/python*.pc
 
