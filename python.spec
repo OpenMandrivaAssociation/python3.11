@@ -13,7 +13,7 @@
 # Python modules aren't linked to libpython%{dirver}
 %global _disable_ld_no_undefined 1
 
-%define docver 3.8.3
+%define docver 3.8.4
 %define dirver %(echo %{version} |cut -d. -f1-2)
 %define familyver 3
 
