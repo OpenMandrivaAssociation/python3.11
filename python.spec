@@ -13,7 +13,7 @@
 # Python modules aren't linked to libpython%{dirver}
 %global _disable_ld_no_undefined 1
 
-%define docver 3.8.5
+%define docver 3.8.6
 %define dirver %(echo %{version} |cut -d. -f1-2)
 %define familyver 3
 
@@ -41,7 +41,7 @@
 
 Summary:	An interpreted, interactive object-oriented programming language
 Name:		python
-Version:	3.8.5
+Version:	3.8.6
 %if "%{pre}" != ""
 Release:	0.%{pre}.1
 %else
