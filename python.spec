@@ -13,7 +13,7 @@
 # Python modules aren't linked to libpython%{dirver}
 %global _disable_ld_no_undefined 1
 
-%define docver 3.8.6
+%define docver 3.9.0
 %define dirver %(echo %{version} |cut -d. -f1-2)
 %define familyver 3
 
@@ -41,7 +41,7 @@
 
 Summary:	An interpreted, interactive object-oriented programming language
 Name:		python
-Version:	3.8.6
+Version:	3.9.0
 %if "%{pre}" != ""
 Release:	0.%{pre}.1
 %else
@@ -55,26 +55,21 @@ Source1:	http://www.python.org/ftp/python/doc/%{docver}/python-%{docver}-docs-ht
 Source2:	python3.macros
 Source3:	pybytecompile.macros
 Source100:	%{name}.rpmlintrc
-# The next 2 patches must be applied conditionally (lib64 only).
-# Added as Source: instead of Patch: so %%autosetup doesn't
-# pick them up.
-Source200:	https://src.fedoraproject.org/rpms/python3/raw/master/f/00001-rpath.patch
-Source201:	https://src.fedoraproject.org/rpms/python3/raw/master/f/00102-lib64.patch
-#Source4:	python-mode-1.0.tar.bz2
 Patch0:		python-3.6.1-module-linkage.patch
-Patch4:		Python-select-requires-libm.patch
-Patch5:		python-3.3.0b1-test-posix_fadvise.patch
-Patch7:		python-3.6.2-clang-5.0.patch
-Patch8:		http://pkgs.fedoraproject.org/cgit/rpms/python3.git/plain/00205-make-libpl-respect-lib64.patch
-Patch9:		Python-3.8.0-c++.patch
-Patch10:	python-3.7.1-dont-build-testembed-with-c++.patch
-Patch11:	python-3.8.0-c++atomics.patch
-Patch12:	0005-Improve-distutils-C-support.patch
-# 00173 #
-# Workaround for ENOPROTOOPT seen in bs within
-# test.test_support.bind_port()
-# from Fedora (rhbz#913732)
-Patch173:	00173-workaround-ENOPROTOOPT-in-bind_port.patch
+Patch1:		https://src.fedoraproject.org/rpms/python3.9/raw/master/f/00001-rpath.patch
+Patch2:		https://src.fedoraproject.org/rpms/python3.9/raw/master/f/00111-no-static-lib.patch
+Patch3:		https://src.fedoraproject.org/rpms/python3.9/raw/master/f/00189-use-rpm-wheels.patch
+Patch4:		https://src.fedoraproject.org/rpms/python3.9/raw/master/f/00251-change-user-install-location.patch
+Patch5:		https://src.fedoraproject.org/rpms/python3.9/raw/master/f/00328-pyc-timestamp-invalidation-mode.patch
+Patch6:		https://src.fedoraproject.org/rpms/python3.9/raw/master/f/00353-architecture-names-upstream-downstream.patch
+
+Patch7:		Python-select-requires-libm.patch
+Patch8:		python-3.3.0b1-test-posix_fadvise.patch
+Patch9:		python-3.6.2-clang-5.0.patch
+Patch10:	Python-3.8.0-c++.patch
+Patch11:	python-3.7.1-dont-build-testembed-with-c++.patch
+Patch12:	python-3.8.0-c++atomics.patch
+Patch13:	0005-Improve-distutils-C-support.patch
 Patch179:	00179-dont-raise-error-on-gdb-corrupted-frames-in-backtrace.patch
 Patch183:	00178-dont-duplicate-flags-in-sysconfig.patch
 Patch184:	00201-fix-memory-leak-in-gdbm.patch
@@ -330,6 +325,7 @@ cd build32
 		--enable-optimizations \
 		--enable-shared \
 		--enable-ipv6 \
+		--with-ssl-default-suites=openssl \
 		--with-computed-gotos
 unset CFLAGS CXXFLAGS CPPFLAGS RPM_OPT_FLAGS LDFLAGS RPM_LD_FLAGS
 make
@@ -341,11 +337,6 @@ cd ..
 export OPT="%{optflags} -g"
 export CFLAGS="%{optflags} -D_GNU_SOURCE -fPIC -fwrapv -I/usr/include/ncursesw"
 export CPPFLAGS="%{optflags} -D_GNU_SOURCE -fPIC -fwrapv -I/usr/include/ncursesw"
-
-%if "%{_lib}" == "lib64"
-patch -p1 -z .p200~ -b <%{S:200}
-patch -p1 -z .p201~ -b <%{S:201}
-%endif
 
 mkdir build
 cd build
@@ -360,6 +351,7 @@ cd build
 %else
 		--without-ensurepip \
 %endif
+		--with-platlibdir=%{_lib} \
 		--with-system-expat \
 		--with-cxx-main=%{__cxx} \
 		--with-system-ffi \
@@ -369,6 +361,7 @@ cd build
 		--enable-ipv6=yes \
 		--with-lto=8 \
 		--with-computed-gotos=yes \
+		--with-ssl-default-suites=openssl \
 %if %{with valgrind}
 		--with-valgrind \
 %endif
@@ -409,12 +402,12 @@ echo 'install_dir='"%{buildroot}%{_bindir}" >>setup.cfg
 mkdir -p %{buildroot}%{_mandir}
 %if %{with compat32}
 %make_install -C build32 LN="ln -sf"
-mv %{buildroot}%{_includedir}/python3.8/pyconfig.h %{buildroot}%{_includedir}/python3.8/pyconfig-32.h 
+mv %{buildroot}%{_includedir}/python%{dirver}/pyconfig.h %{buildroot}%{_includedir}/python%{dirver}/pyconfig-32.h 
 %endif
 %make_install -C build LN="ln -sf"
 %if %{with compat32}
-mv %{buildroot}%{_includedir}/python3.8/pyconfig.h %{buildroot}%{_includedir}/python3.8/pyconfig-64.h 
-cat >%{buildroot}%{_includedir}/python3.8/pyconfig.h <<'EOF'
+mv %{buildroot}%{_includedir}/python%{dirver}/pyconfig.h %{buildroot}%{_includedir}/python%{dirver}/pyconfig-64.h 
+cat >%{buildroot}%{_includedir}/python%{dirver}/pyconfig.h <<'EOF'
 #ifdef __i386__
 #include "pyconfig-32.h"
 #else
@@ -593,6 +586,7 @@ find html -type f |xargs chmod 0644
 %{_libdir}/python%{dirver}/wsgiref*
 %{_libdir}/python%{dirver}/xml
 %{_libdir}/python%{dirver}/xmlrpc
+%{_libdir}/python%{dirver}/zoneinfo
 %{_bindir}/pydoc
 %{_bindir}/pydoc3*
 %{_bindir}/pathfix.py
@@ -684,4 +678,41 @@ find html -type f |xargs chmod 0644
 
 %files -n python32-libs
 %{_prefix}/lib/python%{dirver}/lib-dynload
+%dir %{_prefix}/lib/python%{dirver}
+%{_prefix}/lib/python%{dirver}/LICENSE.txt
+%{_prefix}/lib/python%{dirver}/*.py
+%{_prefix}/lib/python%{dirver}/__pycache__
+%{_prefix}/lib/python%{dirver}/asyncio
+%{_prefix}/lib/python%{dirver}/collections
+%{_prefix}/lib/python%{dirver}/concurrent
+%{_prefix}/lib/python%{dirver}/ctypes
+%{_prefix}/lib/python%{dirver}/curses
+%{_prefix}/lib/python%{dirver}/dbm
+%{_prefix}/lib/python%{dirver}/distutils
+%{_prefix}/lib/python%{dirver}/email
+%{_prefix}/lib/python%{dirver}/encodings
+%{_prefix}/lib/python%{dirver}/ensurepip
+%{_prefix}/lib/python%{dirver}/html
+%{_prefix}/lib/python%{dirver}/http
+%{_prefix}/lib/python%{dirver}/idlelib
+%{_prefix}/lib/python%{dirver}/importlib
+%{_prefix}/lib/python%{dirver}/json
+%{_prefix}/lib/python%{dirver}/lib2to3
+%{_prefix}/lib/python%{dirver}/logging
+%{_prefix}/lib/python%{dirver}/multiprocessing
+%{_prefix}/lib/python%{dirver}/pydoc_data
+%{_prefix}/lib/python%{dirver}/sqlite3
+%{_prefix}/lib/python%{dirver}/test
+%{_prefix}/lib/python%{dirver}/tkinter
+%{_prefix}/lib/python%{dirver}/turtledemo
+%{_prefix}/lib/python%{dirver}/unittest
+%{_prefix}/lib/python%{dirver}/urllib
+%{_prefix}/lib/python%{dirver}/venv
+%{_prefix}/lib/python%{dirver}/wsgiref
+%{_prefix}/lib/python%{dirver}/xml
+%{_prefix}/lib/python%{dirver}/xmlrpc
+%{_prefix}/lib/python%{dirver}/zoneinfo
+%{_prefix}/lib/python%{dirver}/config-*
+%dir %{_prefix}/lib/python%{dirver}/site-packages
+%{_prefix}/lib/python%{dirver}/site-packages/README.txt
 %endif
