@@ -289,7 +289,8 @@ rm -fr Modules/expat
 rm -fr Modules/zlib
 
 %build
-%global optflags %{optflags} -O3
+# Various violations, including in object.h
+%global optflags %{optflags} -fno-strict-aliasing
 
 rm -f Modules/Setup.local
 
