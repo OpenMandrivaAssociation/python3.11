@@ -71,7 +71,6 @@ Patch11:	python-3.7.1-dont-build-testembed-with-c++.patch
 Patch12:	python-3.8.0-c++atomics.patch
 Patch13:	0005-Improve-distutils-C-support.patch
 Patch179:	00179-dont-raise-error-on-gdb-corrupted-frames-in-backtrace.patch
-Patch183:	00178-dont-duplicate-flags-in-sysconfig.patch
 Patch184:	00201-fix-memory-leak-in-gdbm.patch
 # (tpg) ClearLinux patches
 Patch500:	0002-Skip-tests-TODO-fix-skips.patch
