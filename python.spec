@@ -13,7 +13,7 @@
 # Python modules aren't linked to libpython%{dirver}
 %global _disable_ld_no_undefined 1
 
-%define docver 3.9.0
+%define docver 3.9.1rc1
 %define dirver %(echo %{version} |cut -d. -f1-2)
 %define familyver 3
 
@@ -24,7 +24,7 @@
 %define lib32name %mklib32name python %{api} %{major}
 %define dev32name %mklib32name python -d
 
-%define pre %{nil}
+%define pre rc1
 
 %ifarch %{ix86} %{x86_64} ppc
 %bcond_without valgrind
@@ -41,7 +41,7 @@
 
 Summary:	An interpreted, interactive object-oriented programming language
 Name:		python
-Version:	3.9.0
+Version:	3.9.1
 %if "%{pre}" != ""
 Release:	0.%{pre}.1
 %else
