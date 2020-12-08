@@ -13,7 +13,7 @@
 # Python modules aren't linked to libpython%{dirver}
 %global _disable_ld_no_undefined 1
 
-%define docver 3.9.1rc1
+%define docver 3.9.1
 %define dirver %(echo %{version} |cut -d. -f1-2)
 %define familyver 3
 
@@ -24,7 +24,7 @@
 %define lib32name %mklib32name python %{api} %{major}
 %define dev32name %mklib32name python -d
 
-%define pre rc1
+%define pre %{nil}
 
 %ifarch %{ix86} %{x86_64} ppc
 %bcond_without valgrind
