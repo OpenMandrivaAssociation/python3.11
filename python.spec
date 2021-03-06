@@ -4,16 +4,17 @@
 %bcond_without compat32
 %endif
 
+# Not really -- but python's build system enables lto in its own
+# different way, no need for 2 conflicting approaches
+%define _disable_lto 1
+
 # Barfs on supposed-to-fail parts of the testsuite
 %define _python_bytecompile_build 0
-
-# For some reason, python-test thinks it needs both python 3.6 and 3.8
-%global __requires_exclude python\\(abi\\).*3\.6
 
 # Python modules aren't linked to libpython%{dirver}
 %global _disable_ld_no_undefined 1
 
-%define docver 3.9.1
+%define docver %{version}
 %define dirver %(echo %{version} |cut -d. -f1-2)
 %define familyver 3
 
@@ -41,7 +42,7 @@
 
 Summary:	An interpreted, interactive object-oriented programming language
 Name:		python
-Version:	3.9.1
+Version:	3.9.2
 %if "%{pre}" != ""
 Release:	0.%{pre}.1
 %else
@@ -302,6 +303,11 @@ rm -f Modules/Setup.local
 # combination at all
 sed -i -e 's,-std=c99,,' configure.ac
 
+%ifarch znver1
+# Workaround for https://bugs.llvm.org/show_bug.cgi?id=49327
+sed -i -e 's,-flto,-flto=thin,g' configure.ac
+%endif
+
 # (tpg) Determinism
 export PYTHONHASHSEED=0
 
@@ -359,7 +365,7 @@ cd build
 		--enable-shared \
 		--with-pymalloc \
 		--enable-ipv6=yes \
-		--with-lto=8 \
+		--with-lto=16 \
 		--with-computed-gotos=yes \
 		--with-ssl-default-suites=openssl \
 %if %{with valgrind}
