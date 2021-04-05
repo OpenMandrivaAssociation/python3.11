@@ -42,7 +42,7 @@
 
 Summary:	An interpreted, interactive object-oriented programming language
 Name:		python
-Version:	3.9.2
+Version:	3.9.4
 %if "%{pre}" != ""
 Release:	0.%{pre}.1
 %else
