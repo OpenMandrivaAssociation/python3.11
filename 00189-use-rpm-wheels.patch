@@ -33,10 +33,10 @@ index 97dfa7ea71..984e587ea0 100644
  
 +_WHEEL_DIR = "/usr/share/python-wheels/"
  
--_SETUPTOOLS_VERSION = "49.2.1"
+-_SETUPTOOLS_VERSION = "56.0.0"
 +_wheels = {}
  
--_PIP_VERSION = "20.2.3"
+-_PIP_VERSION = "21.1.1"
 +def _get_most_recent_wheel_version(pkg):
 +    prefix = os.path.join(_WHEEL_DIR, "{}-".format(pkg))
 +    _wheels[pkg] = {}
