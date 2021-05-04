@@ -76,6 +76,8 @@ Patch184:	00201-fix-memory-leak-in-gdbm.patch
 # (tpg) ClearLinux patches
 Patch500:	0002-Skip-tests-TODO-fix-skips.patch
 
+BuildRequires:	autoconf
+BuildRequires:	autoconf-archive
 BuildRequires:	blt
 BuildRequires:	pkgconfig(bzip2)
 BuildRequires:	db-devel
