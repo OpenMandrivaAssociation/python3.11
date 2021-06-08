@@ -46,7 +46,7 @@ Version:	3.9.5
 %if "%{pre}" != ""
 Release:	0.%{pre}.1
 %else
-Release:	1
+Release:	2
 %endif
 License:	Modified CNRI Open Source License
 Group:		Development/Python
@@ -152,7 +152,7 @@ Summary:	Shared libraries for Python %{version}
 Group:		System/Libraries
 Obsoletes:	%{_lib}python3.3 < 3.3.2-2
 
-%description -n	%{libname}
+%description -n %{libname}
 This packages contains Python shared object library.  Python is an
 interpreted, interactive, object-oriented programming language often
 compared to Tcl, Perl, Scheme or Java.
@@ -167,7 +167,7 @@ Provides:	%{name}-devel = %{EVRD}
 Provides:	%{name}3-devel = %{EVRD}
 Provides:	pkgconfig(python) = 3
 
-%description -n	%{devname}
+%description -n %{devname}
 The Python programming language's interpreter can be extended with
 dynamically loaded extensions and can be embedded in other programs.
 This package contains the header files and libraries needed to do
@@ -232,7 +232,7 @@ This is only useful to test Python itself.
 Summary:	Shared libraries for Python %{version} (32-bit)
 Group:		System/Libraries
 
-%description -n	%{lib32name}
+%description -n %{lib32name}
 This packages contains Python shared object library.  Python is an
 interpreted, interactive, object-oriented programming language often
 compared to Tcl, Perl, Scheme or Java.
@@ -243,7 +243,7 @@ Group:		Development/Python
 Requires:	%{devname} = %{EVRD}
 Requires:	%{lib32name} = %{EVRD}
 
-%description -n	%{dev32name}
+%description -n %{dev32name}
 The Python programming language's interpreter can be extended with
 dynamically loaded extensions and can be embedded in other programs.
 This package contains the header files and libraries needed to do
@@ -292,14 +292,11 @@ rm -fr Modules/zlib
 
 %build
 # Various violations, including in object.h
-%global optflags %{optflags} -fno-strict-aliasing
+# (tpg) https://maskray.me/blog/2021-05-09-fno-semantic-interposition
+%global optflags %{optflags} -O2 -fno-strict-aliasing -fno-semantic-interposition
+%global build_ldflags %{ldflags} -fno-semantic-interposition
 
 rm -f Modules/Setup.local
-
-# to fix curses module build
-# https://bugs.mageia.org/show_bug.cgi?id=6702
-#export CFLAGS="%{optflags} -D_GNU_SOURCE -fPIC -fwrapv -I/usr/include/ncursesw"
-#export CPPFLAGS="%{optflags} -D_GNU_SOURCE -fPIC -fwrapv -I/usr/include/ncursesw"
 
 # Python's configure adds -std=c99 even for c++, clang doesn't like that
 # combination at all
@@ -320,21 +317,17 @@ export ax_cv_c_float_words_bigendian=no
 export CONFIGURE_TOP="$(pwd)"
 
 %if %{with compat32}
-# to fix curses module build
-# https://bugs.mageia.org/show_bug.cgi?id=6702
-#export CFLAGS="$(echo %{optflags} |sed -e 's,-m64,,;s,-mx32,,') -m32 -D_GNU_SOURCE -fPIC -fwrapv -I/usr/include/ncursesw"
-#export CPPFLAGS="$(echo %{optflags} |sed -e 's,-m64,,;s,-mx32,,') -m32 -D_GNU_SOURCE -fPIC -fwrapv -I/usr/include/ncursesw"
 mkdir build32
 cd build32
 %configure32 \
-		--without-ensurepip \
-		--with-system-expat \
-		--with-system-ffi \
-		--enable-optimizations \
-		--enable-shared \
-		--enable-ipv6 \
-		--with-ssl-default-suites=openssl \
-		--with-computed-gotos
+	--without-ensurepip \
+	--with-system-expat \
+	--with-system-ffi \
+	--enable-optimizations \
+	--enable-shared \
+	--enable-ipv6 \
+	--with-ssl-default-suites=openssl \
+	--with-computed-gotos
 unset CFLAGS CXXFLAGS CPPFLAGS RPM_OPT_FLAGS LDFLAGS RPM_LD_FLAGS
 make
 cd ..
@@ -348,35 +341,30 @@ export CPPFLAGS="%{optflags} -D_GNU_SOURCE -fPIC -fwrapv -I/usr/include/ncursesw
 
 mkdir build
 cd build
-%configure	\
-%ifnarch %{riscv}
-		--without-gcc \
-%endif
-		--enable-ipv6 \
-		--with-dbmliborder=gdbm \
+%configure \
+	--enable-ipv6 \
+	--with-dbmliborder=gdbm \
 %if %{with pip}
-		--with-ensurepip=install \
+	--with-ensurepip=install \
 %else
-		--without-ensurepip \
+	--without-ensurepip \
 %endif
-		--with-platlibdir=%{_lib} \
-		--with-system-expat \
-		--with-cxx-main=%{__cxx} \
-		--with-system-ffi \
-		--enable-loadable-sqlite-extensions \
-		--enable-shared \
-		--with-pymalloc \
-		--enable-ipv6=yes \
-		--with-lto=16 \
-		--with-computed-gotos=yes \
-		--with-ssl-default-suites=openssl \
+	--with-platlibdir=%{_lib} \
+	--with-system-expat \
+	--with-cxx-main=%{__cxx} \
+	--with-system-ffi \
+	--enable-loadable-sqlite-extensions \
+	--enable-shared \
+	--with-pymalloc \
+	--enable-ipv6=yes \
+	--with-lto=16 \
+	--with-computed-gotos=yes \
+	--with-ssl-default-suites=openssl \
 %if %{with valgrind}
-		--with-valgrind \
+	--with-valgrind \
 %endif
-		--enable-optimizations
+	--enable-optimizations
 
-# fix build
-#perl -pi -e 's/^(LDFLAGS=.*)/$1 -lstdc++/' Makefile
 # (misc) if the home is nfs mounted, rmdir fails due to delay
 export TMP="/tmp" TMPDIR="/tmp"
 # This is used for bootstrapping - and we don't want to
