@@ -338,6 +338,7 @@ cd ..
 export OPT="%{optflags} -g"
 export CFLAGS="%{optflags} -D_GNU_SOURCE -fPIC -fwrapv -I/usr/include/ncursesw"
 export CPPFLAGS="%{optflags} -D_GNU_SOURCE -fPIC -fwrapv -I/usr/include/ncursesw"
+export LDFLAGS="${CFLAGS}"
 
 mkdir build
 cd build
