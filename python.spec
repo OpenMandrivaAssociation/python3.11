@@ -293,8 +293,8 @@ rm -fr Modules/zlib
 %build
 # Various violations, including in object.h
 # (tpg) https://maskray.me/blog/2021-05-09-fno-semantic-interposition
-%global optflags %{optflags} -O2 -fno-strict-aliasing -fno-semantic-interposition
-%global build_ldflags %{ldflags} -fno-semantic-interposition
+%global optflags %{optflags} -O2 -fno-strict-aliasing -fno-semantic-interposition -Wl,-Bsymbolic
+%global build_ldflags %{ldflags} -fno-semantic-interposition -Wl,-Bsymbolic
 
 rm -f Modules/Setup.local
 
