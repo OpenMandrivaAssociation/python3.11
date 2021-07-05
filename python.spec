@@ -293,7 +293,7 @@ rm -fr Modules/zlib
 %build
 # Various violations, including in object.h
 # (tpg) https://maskray.me/blog/2021-05-09-fno-semantic-interposition
-%global optflags %{optflags} -O2 -fno-strict-aliasing -fno-semantic-interposition -Wl,-Bsymbolic
+%global optflags %{optflags} -O2 -fPIC -fno-strict-aliasing -fno-semantic-interposition -Wl,-Bsymbolic
 %global build_ldflags %{ldflags} -fno-semantic-interposition -Wl,-Bsymbolic
 
 rm -f Modules/Setup.local
@@ -302,7 +302,7 @@ rm -f Modules/Setup.local
 # combination at all
 sed -i -e 's,-std=c99,,' configure.ac
 
-%ifarch znver1
+%ifnarch %{ix86}
 # Workaround for https://bugs.llvm.org/show_bug.cgi?id=49327
 sed -i -e 's,-flto,-flto=thin,g' configure.ac
 %endif
