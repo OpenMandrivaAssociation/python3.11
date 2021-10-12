@@ -323,7 +323,7 @@ cd build32
 	--without-ensurepip \
 	--with-system-expat \
 	--with-system-ffi \
-	--enable-optimizations \
+	--disable-optimizations \
 	--enable-shared \
 	--enable-ipv6 \
 	--with-ssl-default-suites=openssl \
