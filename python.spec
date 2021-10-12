@@ -364,7 +364,7 @@ cd build
 %if %{with valgrind}
 	--with-valgrind \
 %endif
-	--enable-optimizations
+	--disable-optimizations
 
 # (misc) if the home is nfs mounted, rmdir fails due to delay
 export TMP="/tmp" TMPDIR="/tmp"
