@@ -42,11 +42,11 @@
 
 Summary:	An interpreted, interactive object-oriented programming language
 Name:		python
-Version:	3.9.5
+Version:	3.9.8
 %if "%{pre}" != ""
 Release:	0.%{pre}.1
 %else
-Release:	2
+Release:	1
 %endif
 License:	Modified CNRI Open Source License
 Group:		Development/Python
@@ -57,12 +57,12 @@ Source2:	python3.macros
 Source3:	pybytecompile.macros
 Source100:	%{name}.rpmlintrc
 Patch0:		python-3.6.1-module-linkage.patch
-Patch1:		https://src.fedoraproject.org/rpms/python3.9/raw/master/f/00001-rpath.patch
-Patch2:		https://src.fedoraproject.org/rpms/python3.9/raw/master/f/00111-no-static-lib.patch
-Patch3:		https://src.fedoraproject.org/rpms/python3.9/raw/master/f/00189-use-rpm-wheels.patch
-Patch4:		https://src.fedoraproject.org/rpms/python3.9/raw/master/f/00251-change-user-install-location.patch
-Patch5:		https://src.fedoraproject.org/rpms/python3.9/raw/master/f/00328-pyc-timestamp-invalidation-mode.patch
-Patch6:		https://src.fedoraproject.org/rpms/python3.9/raw/master/f/00353-architecture-names-upstream-downstream.patch
+Patch1:		https://src.fedoraproject.org/rpms/python3.9/raw/rawhide/f/00001-rpath.patch
+Patch2:		https://src.fedoraproject.org/rpms/python3.9/raw/rawhide/f/00111-no-static-lib.patch
+Patch3:		https://src.fedoraproject.org/rpms/python3.9/raw/rawhide/f/00189-use-rpm-wheels.patch
+Patch4:		https://src.fedoraproject.org/rpms/python3.9/raw/rawhide/f/00251-change-user-install-location.patch
+Patch5:		https://src.fedoraproject.org/rpms/python3.9/raw/rawhide/f/00328-pyc-timestamp-invalidation-mode.patch
+Patch6:		https://src.fedoraproject.org/rpms/python3.9/raw/rawhide/f/00353-architecture-names-upstream-downstream.patch
 
 Patch7:		Python-select-requires-libm.patch
 Patch8:		python-3.3.0b1-test-posix_fadvise.patch
