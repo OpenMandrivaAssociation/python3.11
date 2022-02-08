@@ -1,6 +1,6 @@
-diff -up Python-3.9.0/Include/internal/pycore_atomic.h.13~ Python-3.9.0/Include/internal/pycore_atomic.h
---- Python-3.9.0/Include/internal/pycore_atomic.h.13~	2020-10-05 17:07:58.000000000 +0200
-+++ Python-3.9.0/Include/internal/pycore_atomic.h	2020-10-18 20:08:36.413390817 +0200
+diff -up Python-3.11.0a5/Include/internal/pycore_atomic.h.6~ Python-3.11.0a5/Include/internal/pycore_atomic.h
+--- Python-3.11.0a5/Include/internal/pycore_atomic.h.6~	2022-02-03 19:37:08.000000000 +0100
++++ Python-3.11.0a5/Include/internal/pycore_atomic.h	2022-02-08 17:49:48.488052459 +0100
 @@ -1,5 +1,18 @@
  #ifndef Py_ATOMIC_H
  #define Py_ATOMIC_H
@@ -24,14 +24,14 @@ diff -up Python-3.9.0/Include/internal/pycore_atomic.h.13~ Python-3.9.0/Include/
  #include "dynamic_annotations.h"   /* _Py_ANNOTATE_MEMORY_ORDER */
  #include "pyconfig.h"
  
--#if defined(HAVE_STD_ATOMIC)
+-#ifdef HAVE_STD_ATOMIC
 +#if defined(HAVE_STD_ATOMIC) && !defined(CXX_ATOMICS)
- #include <stdatomic.h>
+ #  include <stdatomic.h>
  #endif
  
-diff -up Python-3.9.0/Include/internal/pycore_gil.h.13~ Python-3.9.0/Include/internal/pycore_gil.h
---- Python-3.9.0/Include/internal/pycore_gil.h.13~	2020-10-05 17:07:58.000000000 +0200
-+++ Python-3.9.0/Include/internal/pycore_gil.h	2020-10-18 20:09:01.177659608 +0200
+diff -up Python-3.11.0a5/Include/internal/pycore_gil.h.6~ Python-3.11.0a5/Include/internal/pycore_gil.h
+--- Python-3.11.0a5/Include/internal/pycore_gil.h.6~	2022-02-03 19:37:08.000000000 +0100
++++ Python-3.11.0a5/Include/internal/pycore_gil.h	2022-02-08 17:49:06.774200895 +0100
 @@ -1,5 +1,8 @@
  #ifndef Py_INTERNAL_GIL_H
  #define Py_INTERNAL_GIL_H
@@ -49,9 +49,9 @@ diff -up Python-3.9.0/Include/internal/pycore_gil.h.13~ Python-3.9.0/Include/int
  #include "pycore_condvar.h"   /* PyCOND_T */
  
  #ifndef Py_HAVE_CONDVAR
-diff -up Python-3.9.0/Include/internal/pycore_initconfig.h.13~ Python-3.9.0/Include/internal/pycore_initconfig.h
---- Python-3.9.0/Include/internal/pycore_initconfig.h.13~	2020-10-05 17:07:58.000000000 +0200
-+++ Python-3.9.0/Include/internal/pycore_initconfig.h	2020-10-18 20:09:17.156833044 +0200
+diff -up Python-3.11.0a5/Include/internal/pycore_initconfig.h.6~ Python-3.11.0a5/Include/internal/pycore_initconfig.h
+--- Python-3.11.0a5/Include/internal/pycore_initconfig.h.6~	2022-02-03 19:37:08.000000000 +0100
++++ Python-3.11.0a5/Include/internal/pycore_initconfig.h	2022-02-08 17:49:06.774200895 +0100
 @@ -1,5 +1,6 @@
  #ifndef Py_INTERNAL_CORECONFIG_H
  #define Py_INTERNAL_CORECONFIG_H
@@ -59,9 +59,9 @@ diff -up Python-3.9.0/Include/internal/pycore_initconfig.h.13~ Python-3.9.0/Incl
  #ifdef __cplusplus
  extern "C" {
  #endif
-diff -up Python-3.9.0/Include/internal/pycore_pylifecycle.h.13~ Python-3.9.0/Include/internal/pycore_pylifecycle.h
---- Python-3.9.0/Include/internal/pycore_pylifecycle.h.13~	2020-10-05 17:07:58.000000000 +0200
-+++ Python-3.9.0/Include/internal/pycore_pylifecycle.h	2020-10-18 20:09:32.347997926 +0200
+diff -up Python-3.11.0a5/Include/internal/pycore_pylifecycle.h.6~ Python-3.11.0a5/Include/internal/pycore_pylifecycle.h
+--- Python-3.11.0a5/Include/internal/pycore_pylifecycle.h.6~	2022-02-03 19:37:08.000000000 +0100
++++ Python-3.11.0a5/Include/internal/pycore_pylifecycle.h	2022-02-08 17:49:06.774200895 +0100
 @@ -1,5 +1,6 @@
  #ifndef Py_INTERNAL_LIFECYCLE_H
  #define Py_INTERNAL_LIFECYCLE_H
@@ -69,9 +69,9 @@ diff -up Python-3.9.0/Include/internal/pycore_pylifecycle.h.13~ Python-3.9.0/Inc
  #ifdef __cplusplus
  extern "C" {
  #endif
-diff -up Python-3.9.0/Include/internal/pycore_pystate.h.13~ Python-3.9.0/Include/internal/pycore_pystate.h
---- Python-3.9.0/Include/internal/pycore_pystate.h.13~	2020-10-05 17:07:58.000000000 +0200
-+++ Python-3.9.0/Include/internal/pycore_pystate.h	2020-10-18 20:09:45.317138691 +0200
+diff -up Python-3.11.0a5/Include/internal/pycore_pystate.h.6~ Python-3.11.0a5/Include/internal/pycore_pystate.h
+--- Python-3.11.0a5/Include/internal/pycore_pystate.h.6~	2022-02-03 19:37:08.000000000 +0100
++++ Python-3.11.0a5/Include/internal/pycore_pystate.h	2022-02-08 17:49:06.774200895 +0100
 @@ -1,5 +1,6 @@
  #ifndef Py_INTERNAL_PYSTATE_H
  #define Py_INTERNAL_PYSTATE_H

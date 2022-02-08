@@ -14,7 +14,7 @@
 # Python modules aren't linked to libpython%{dirver}
 %global _disable_ld_no_undefined 1
 
-%define docver %{version}
+%define docver 3.10.2
 %define dirver %(echo %{version} |cut -d. -f1-2)
 %define familyver 3
 
@@ -25,7 +25,7 @@
 %define lib32name %mklib32name python %{api} %{major}
 %define dev32name %mklib32name python -d
 
-%define pre %{nil}
+%define pre a5
 
 %ifarch %{ix86} %{x86_64} ppc
 %bcond_without valgrind
@@ -42,7 +42,7 @@
 
 Summary:	An interpreted, interactive object-oriented programming language
 Name:		python
-Version:	3.9.8
+Version:	3.11.0
 %if "%{pre}" != ""
 Release:	0.%{pre}.1
 %else
@@ -56,22 +56,15 @@ Source1:	http://www.python.org/ftp/python/doc/%{docver}/python-%{docver}-docs-ht
 Source2:	python3.macros
 Source3:	pybytecompile.macros
 Source100:	%{name}.rpmlintrc
-Patch0:		python-3.6.1-module-linkage.patch
-Patch1:		https://src.fedoraproject.org/rpms/python3.9/raw/rawhide/f/00001-rpath.patch
-Patch2:		https://src.fedoraproject.org/rpms/python3.9/raw/rawhide/f/00111-no-static-lib.patch
-Patch3:		https://src.fedoraproject.org/rpms/python3.9/raw/rawhide/f/00189-use-rpm-wheels.patch
-Patch4:		https://src.fedoraproject.org/rpms/python3.9/raw/rawhide/f/00251-change-user-install-location.patch
-Patch5:		https://src.fedoraproject.org/rpms/python3.9/raw/rawhide/f/00328-pyc-timestamp-invalidation-mode.patch
-Patch6:		https://src.fedoraproject.org/rpms/python3.9/raw/rawhide/f/00353-architecture-names-upstream-downstream.patch
+Patch1:		https://src.fedoraproject.org/rpms/python3.11/raw/rawhide/f/00001-rpath.patch
+Patch4:		https://src.fedoraproject.org/rpms/python3.11/raw/rawhide/f/00251-change-user-install-location.patch
+Patch5:		https://src.fedoraproject.org/rpms/python3.11/raw/rawhide/f/00328-pyc-timestamp-invalidation-mode.patch
 
-Patch7:		Python-select-requires-libm.patch
-Patch8:		python-3.3.0b1-test-posix_fadvise.patch
 Patch9:		python-3.6.2-clang-5.0.patch
 Patch10:	Python-3.8.0-c++.patch
-Patch11:	python-3.7.1-dont-build-testembed-with-c++.patch
 Patch12:	python-3.8.0-c++atomics.patch
 Patch13:	0005-Improve-distutils-C-support.patch
-Patch179:	00179-dont-raise-error-on-gdb-corrupted-frames-in-backtrace.patch
+Patch14:	python-3.7.1-dont-build-testembed-with-c++.patch
 Patch184:	00201-fix-memory-leak-in-gdbm.patch
 # (tpg) ClearLinux patches
 Patch500:	0002-Skip-tests-TODO-fix-skips.patch
@@ -95,7 +88,7 @@ BuildRequires:	pkgconfig(tcl)
 BuildRequires:	pkgconfig(tk)
 BuildRequires:	pkgconfig(zlib)
 BuildRequires:	pkgconfig(uuid)
-BuildRequires:	python2
+#BuildRequires:	python2
 %if %{with valgrind}
 BuildRequires:	valgrind-devel
 %endif
@@ -302,11 +295,6 @@ rm -f Modules/Setup.local
 # combination at all
 sed -i -e 's,-std=c99,,' configure.ac
 
-%ifnarch %{ix86}
-# Workaround for https://bugs.llvm.org/show_bug.cgi?id=49327
-sed -i -e 's,-flto,-flto=thin,g' configure.ac
-%endif
-
 # (tpg) Determinism
 export PYTHONHASHSEED=0
 
@@ -358,7 +346,7 @@ cd build
 	--enable-shared \
 	--with-pymalloc \
 	--enable-ipv6=yes \
-	--with-lto=16 \
+	--with-lto=full \
 	--with-computed-gotos=yes \
 	--with-ssl-default-suites=openssl \
 %if %{with valgrind}
@@ -572,10 +560,10 @@ find html -type f |xargs chmod 0644
 %exclude %{_libdir}/python%{dirver}/lib2to3/tests
 %{_libdir}/python%{dirver}/logging
 %{_libdir}/python%{dirver}/multiprocessing
+%{_libdir}/python%{dirver}/__phello__
 %{_libdir}/python%{dirver}/pydoc_data
 %{_libdir}/python%{dirver}/site-packages
 %{_libdir}/python%{dirver}/sqlite3
-%exclude %{_libdir}/python%{dirver}/sqlite3/test
 %{_libdir}/python%{dirver}/unittest
 %exclude %{_libdir}/python%{dirver}/unittest/test
 %{_libdir}/python%{dirver}/urllib
@@ -655,7 +643,6 @@ find html -type f |xargs chmod 0644
 %{_libdir}/python*/test/
 %{_libdir}/python%{dirver}/ctypes/test
 %{_libdir}/python%{dirver}/distutils/tests
-%{_libdir}/python%{dirver}/sqlite3/test
 %{_libdir}/python%{dirver}/lib-dynload/_ctypes_test.*.so
 %{_libdir}/python%{dirver}/lib-dynload/_testbuffer.*.so
 %{_libdir}/python%{dirver}/lib-dynload/_testcapi.*.so
@@ -679,6 +666,7 @@ find html -type f |xargs chmod 0644
 %{_prefix}/lib/python%{dirver}/LICENSE.txt
 %{_prefix}/lib/python%{dirver}/*.py
 %{_prefix}/lib/python%{dirver}/__pycache__
+%{_prefix}/lib/python%{dirver}/__phello__
 %{_prefix}/lib/python%{dirver}/asyncio
 %{_prefix}/lib/python%{dirver}/collections
 %{_prefix}/lib/python%{dirver}/concurrent

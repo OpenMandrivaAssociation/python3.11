@@ -1,10 +1,19 @@
-diff -up Python-3.7.1/Makefile.pre.in.omv~ Python-3.7.1/Makefile.pre.in
---- Python-3.7.1/Makefile.pre.in.omv~	2018-12-02 16:25:48.560103656 +0100
-+++ Python-3.7.1/Makefile.pre.in	2018-12-02 16:25:58.514114077 +0100
-@@ -767,7 +767,7 @@ Programs/python.o: $(srcdir)/Programs/py
+diff -up Python-3.11.0a5/Makefile.pre.in.8~ Python-3.11.0a5/Makefile.pre.in
+--- Python-3.11.0a5/Makefile.pre.in.8~	2022-02-08 21:54:48.935494952 +0100
++++ Python-3.11.0a5/Makefile.pre.in	2022-02-08 22:03:22.908221132 +0100
+@@ -944,7 +944,7 @@ regen-test-frozenmain: $(BUILDPYTHON)
+ 	$(RUNSHARED) ./$(BUILDPYTHON) $(srcdir)/Programs/freeze_test_frozenmain.py Programs/test_frozenmain.h
+ 
+ Programs/_testembed: Programs/_testembed.o $(LINK_PYTHON_DEPS)
+-	$(LINKCC) $(PY_CORE_LDFLAGS) $(LINKFORSHARED) -o $@ Programs/_testembed.o $(LINK_PYTHON_OBJS) $(LIBS) $(MODLIBS) $(SYSLIBS)
++	$(CC) $(PY_CORE_LDFLAGS) $(LINKFORSHARED) -o $@ Programs/_testembed.o $(LINK_PYTHON_OBJS) $(LIBS) $(MODLIBS) $(SYSLIBS)
+ 
+ ############################################################################
+ # "Bootstrap Python" used to run deepfreeze.py
+@@ -1224,7 +1224,7 @@ Programs/python.o: $(srcdir)/Programs/py
  	$(MAINCC) -c $(PY_CORE_CFLAGS) -o $@ $(srcdir)/Programs/python.c
  
- Programs/_testembed.o: $(srcdir)/Programs/_testembed.c
+ Programs/_testembed.o: $(srcdir)/Programs/_testembed.c Programs/test_frozenmain.h
 -	$(MAINCC) -c $(PY_CORE_CFLAGS) -o $@ $(srcdir)/Programs/_testembed.c
 +	$(CC) -c $(PY_CORE_CFLAGS) -o $@ $(srcdir)/Programs/_testembed.c
  
