@@ -1,0 +1,40 @@
+#!/bin/bash
+# Sample script for updating to a new major version of python
+# without breaking vital bits (dnf, abf-console-client, mock)
+# (C) 2022 Bernhard "bero" Rosenkränzer <bero@lindev.ch>
+# Released under the GPLv3
+set -e
+
+PKGS="python file rpm python-setuptools libdnf libcomps gpgme rpmlint python-packaging python-parsing python-docutils
+	python-alabaster python-pytz python-babel python-markupsafe python-jinja2 python-pygments python-charset-normalizer
+	python-idna python-imagesize python-urllib3 python-certifi python-requests python-snowballstemmer
+	python-sphinxcontrib-applehelp python-sphinxcontrib-devhelp python-sphinxcontrib-htmlhelp python-sphinxcontrib-jsmath
+	python-sphinxcontrib-qthelp python-sphinxcontrib-serializinghtml python-sphinxcontrib-websupport python-sphinx
+	python-bugzilla dnf python-six python-pip python-dateutil dbus-python dnf-plugins-core python-beaker python-yaml
+	abf-console-client python-templated-dictionary mock"
+
+DIR="`mktemp -d  /tmp/pyupXXXXXX`"
+cd "$DIR"
+for i in $PKGS; do
+	git clone https://github.com/OpenMandrivaAssociation/$i.git
+	cd "$i"
+	abb restore
+	sudo dnf -y builddep *.spec
+	cd ..
+done
+for i in $PKGS; do
+	cd "$i"
+	abb build
+	sudo rpm -Uvh --nodeps RPMS/*/*
+	cd ..
+
+	case "$i" in
+	python)
+		echo '%_nonzero_exit_pkgcheck_terminate_build 0' >>~/.rpmmacros
+		;;
+	rpmlint)
+		sed -i -e '/nonzero_exit_pkgcheck/d' ~/.rpmmacros
+		;;
+	esac
+done
+

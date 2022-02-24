@@ -90,8 +90,12 @@ Name:		python
 #	python-beaker
 #	python-yaml
 #	abf-console-client
+#	python-templated-dictionary
+#	mock
 # After getting all related packages into abf, run a mass build to
 # adapt the other packages.
+# (See the pyup script in the python package source directory
+# for an example of how to update)
 Version:	3.11.0
 %if "%{pre}" != ""
 Release:	0.%{pre}.1
