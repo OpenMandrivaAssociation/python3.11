@@ -42,6 +42,56 @@
 
 Summary:	An interpreted, interactive object-oriented programming language
 Name:		python
+# WARNING
+# When updating to a new major version (e.g. 3.11 to 3.12, not 3.11.1
+# to 3.11.2), make sure you don't break dnf.
+# For dnf and abf-console-client to work, you have to rebuild the following packages against
+# the new version of python:
+#	[disable rpmlint for now -- it needs python-rpm. Set _nonzero_exit_pkgcheck_terminate_build to 0 in ~/.rpmmacros]
+#	python-setuptools (may need to be rebuilt twice to catch dependencies)
+#	file [for python-magic]
+#	rpm [for python-rpm]
+#	libdnf
+#	libcomps
+#	gpgme
+#	rpmlint
+#	[at this point you can re-enable rpmlint in ~/.rpmmacros]
+#	python-packaging
+#	python-parsing
+#	python-docutils
+#	python-alabaster
+#	python-pytz
+#	python-babel
+#	python-markupsafe
+#	python-jinja2
+#	python-pygments
+#	python-charset-normalizer
+#	python-idna
+#	python-imagesize
+#	python-urllib3
+#	python-certifi
+#	python-requests
+#	python-snowballstemmer
+#	python-sphinxcontrib-applehelp
+#	python-sphinxcontrib-devhelp
+#	python-sphinxcontrib-htmlhelp
+#	python-sphinxcontrib-jsmath
+#	python-sphinxcontrib-qthelp
+#	python-sphinxcontrib-serializinghtml
+#	python-sphinxcontrib-websupport
+#	python-sphinx
+#	python-bugzilla
+#	dnf
+#	python-six
+#	python-pip
+#	python-dateutil
+#	dbus-python
+#	dnf-plugins-core
+#	python-beaker
+#	python-yaml
+#	abf-console-client
+# After getting all related packages into abf, run a mass build to
+# adapt the other packages.
 Version:	3.11.0
 %if "%{pre}" != ""
 Release:	0.%{pre}.1
