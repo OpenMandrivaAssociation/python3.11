@@ -25,7 +25,7 @@
 %define lib32name %mklib32name python %{api} %{major}
 %define dev32name %mklib32name python -d
 
-%define pre a5
+%define pre a6
 
 %ifarch %{ix86} %{x86_64} ppc
 %bcond_without valgrind
