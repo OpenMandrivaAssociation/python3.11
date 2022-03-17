@@ -22,6 +22,7 @@
 %define major 1
 %define libname %mklibname python %{api} %{major}
 %define devname %mklibname python -d
+%define staticname %mklibname python -d -s
 %define lib32name %mklib32name python %{api} %{major}
 %define dev32name %mklib32name python -d
 
@@ -98,7 +99,7 @@ Name:		python
 # for an example of how to update)
 Version:	3.11.0
 %if "%{pre}" != ""
-Release:	0.%{pre}.1
+Release:	0.%{pre}.2
 %else
 Release:	1
 %endif
@@ -224,6 +225,20 @@ Install %{devname} if you want to develop Python extensions.  The
 python package will also need to be installed.  You'll probably also
 want to install the python-docs package, which contains Python
 documentation.
+
+%package -n %{staticname}
+Summary:	Static libraries needed for Python development
+Group:		Development/Python
+Requires:	%{devname} = %{EVRD}
+
+%description -n %{staticname}
+The Python programming language's interpreter can be extended with
+dynamically loaded extensions and can be embedded in other programs.
+This package contains the header files and libraries needed to do
+these types of tasks.
+
+Install %{staticname} if you want to link statically to Python,
+e.g. when using the Nuitka compiler
 
 %package docs
 Summary:	Documentation for the Python programming language
@@ -398,6 +413,7 @@ cd build
 	--with-system-ffi \
 	--enable-loadable-sqlite-extensions \
 	--enable-shared \
+	--enable-static \
 	--with-pymalloc \
 	--enable-ipv6=yes \
 	--with-lto=full \
@@ -406,7 +422,7 @@ cd build
 %if %{with valgrind}
 	--with-valgrind \
 %endif
-	--disable-optimizations
+	--enable-optimizations
 
 # (misc) if the home is nfs mounted, rmdir fails due to delay
 export TMP="/tmp" TMPDIR="/tmp"
@@ -455,6 +471,10 @@ cat >%{buildroot}%{_includedir}/python%{dirver}/pyconfig.h <<'EOF'
 EOF
 %endif
 
+# Why doesn't the static lib get installed even if it's built?
+cp build/libpython%{api}.a %{buildroot}%{_libdir}/
+
+# No .so symlink either...
 (cd %{buildroot}%{_libdir}; ln -sf $(ls libpython%{api}*.so.*) libpython%{api}.so)
 
 # install pynche
@@ -674,6 +694,9 @@ find html -type f |xargs chmod 0644
 %exclude %{_includedir}/python*/pyconfig-64.h
 %endif
 %exclude %{_libdir}/python*/config*/Makefile
+
+%files -n %{staticname}
+%{_libdir}/libpython*.a
 
 %files docs
 %doc html/*/*
