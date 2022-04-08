@@ -636,8 +636,10 @@ find html -type f |xargs chmod 0644
 %{_libdir}/python%{dirver}/multiprocessing
 %{_libdir}/python%{dirver}/__phello__
 %{_libdir}/python%{dirver}/pydoc_data
+%{_libdir}/python%{dirver}/re
 %{_libdir}/python%{dirver}/site-packages
 %{_libdir}/python%{dirver}/sqlite3
+%{_libdir}/python%{dirver}/tomllib
 %{_libdir}/python%{dirver}/unittest
 %exclude %{_libdir}/python%{dirver}/unittest/test
 %{_libdir}/python%{dirver}/urllib
@@ -763,9 +765,11 @@ find html -type f |xargs chmod 0644
 %{_prefix}/lib/python%{dirver}/logging
 %{_prefix}/lib/python%{dirver}/multiprocessing
 %{_prefix}/lib/python%{dirver}/pydoc_data
+%{_prefix}/lib/python%{dirver}/re
 %{_prefix}/lib/python%{dirver}/sqlite3
 %{_prefix}/lib/python%{dirver}/test
 %{_prefix}/lib/python%{dirver}/tkinter
+%{_prefix}/lib/python%{dirver}/tomllib
 %{_prefix}/lib/python%{dirver}/turtledemo
 %{_prefix}/lib/python%{dirver}/unittest
 %{_prefix}/lib/python%{dirver}/urllib
