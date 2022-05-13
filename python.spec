@@ -26,7 +26,7 @@
 %define lib32name %mklib32name python %{api} %{major}
 %define dev32name %mklib32name python -d
 
-%define pre a7
+%define pre b1
 
 %ifarch %{ix86} %{x86_64} ppc
 %bcond_without valgrind
@@ -99,7 +99,7 @@ Name:		python
 # for an example of how to update)
 Version:	3.11.0
 %if "%{pre}" != ""
-Release:	0.%{pre}.2
+Release:	0.%{pre}.1
 %else
 Release:	1
 %endif
@@ -360,9 +360,9 @@ rm -fr Modules/zlib
 
 rm -f Modules/Setup.local
 
-# Python's configure adds -std=c99 even for c++, clang doesn't like that
+# Python's configure adds -std=c11 even for c++, clang doesn't like that
 # combination at all
-sed -i -e 's,-std=c99,,' configure.ac
+sed -i -e 's,-std=c11,,' configure.ac
 
 # (tpg) Determinism
 export PYTHONHASHSEED=0
@@ -477,17 +477,7 @@ cp build/libpython%{api}.a %{buildroot}%{_libdir}/
 # No .so symlink either...
 (cd %{buildroot}%{_libdir}; ln -sf $(ls libpython%{api}*.so.*) libpython%{api}.so)
 
-# install pynche
-cat << EOF > %{buildroot}%{_bindir}/pynche
-#!/bin/bash
-exec %{_libdir}/python%{dirver}/site-packages/pynche/pynche
-EOF
-rm -f Tools/pynche/*.pyw
-cp -r Tools/pynche %{buildroot}%{_libdir}/python%{dirver}/site-packages/
-
-chmod 755 %{buildroot}%{_bindir}/{idle3,pynche}
-
-ln -f Tools/pynche/README Tools/pynche/README.pynche
+chmod 755 %{buildroot}%{_bindir}/idle3
 
 %if %{with valgrind}
 install Misc/valgrind-python.supp -D %{buildroot}%{_libdir}/valgrind/valgrind-python3.supp
@@ -601,7 +591,6 @@ find html -type f |xargs chmod 0644
 
 %dir %{_libdir}/python*/config-*
 %{_libdir}/python*/config*/Makefile
-%exclude %{_libdir}/python*/site-packages/pynche
 %exclude %{_libdir}/python*/lib-dynload/_tkinter.*.so
 
 # HACK: build fails without this (TODO: investigate rpm)
@@ -710,12 +699,10 @@ find html -type f |xargs chmod 0644
 %exclude %{_libdir}/python%{dirver}/tkinter/test
 %{_libdir}/python%{dirver}/turtledemo
 %{_libdir}/python*/idlelib
-%{_libdir}/python*/site-packages/pynche
 %{_libdir}/python*/lib-dynload/_tkinter.*.so
 
 %files -n tkinter-apps
 %{_bindir}/idle3*
-%{_bindir}/pynche
 %{_datadir}/applications/mandriva-tkinter3.desktop
 
 %files test
