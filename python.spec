@@ -99,7 +99,7 @@ Name:		python
 # for an example of how to update)
 Version:	3.11.0
 %if "%{pre}" != ""
-Release:	0.%{pre}.1
+Release:	0.%{pre}.2
 %else
 Release:	1
 %endif
@@ -255,6 +255,14 @@ in ASCII text files and in LaTeX source files.
 
 Install the python-docs package if you'd like to use the documentation
 for the Python language.
+
+%package ensurepip
+Summary:	Python module for installing the pip package manager
+Group:		Development/Python
+Requires:	%{name} = %{EVRD}
+
+%description ensurepip
+Python module for installing the pip package manager
 
 %package -n tkinter
 Summary:	A graphical user interface for the Python scripting language
@@ -609,7 +617,6 @@ find html -type f |xargs chmod 0644
 %exclude %{_libdir}/python%{dirver}/distutils/tests
 %{_libdir}/python%{dirver}/email
 %{_libdir}/python%{dirver}/encodings
-%{_libdir}/python%{dirver}/ensurepip
 %{_libdir}/python%{dirver}/html
 %{_libdir}/python%{dirver}/http
 %{_libdir}/python%{dirver}/importlib
@@ -667,6 +674,9 @@ find html -type f |xargs chmod 0644
 %{_bindir}/pip3
 %{_bindir}/pip%{dirver}
 %endif
+
+%files ensurepip
+%{_libdir}/python%{dirver}/ensurepip
 
 %files -n %{libname}
 %{_libdir}/libpython%{api}.so.%{major}*
