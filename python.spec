@@ -26,7 +26,7 @@
 %define lib32name %mklib32name python %{api} %{major}
 %define dev32name %mklib32name python -d
 
-%define pre b4
+%define pre b5
 
 %ifarch %{ix86} %{x86_64} ppc
 %bcond_without valgrind
@@ -99,7 +99,7 @@ Name:		python
 # for an example of how to update)
 Version:	3.11.0
 %if "%{pre}" != ""
-Release:	0.%{pre}.2
+Release:	0.%{pre}.1
 %else
 Release:	1
 %endif
