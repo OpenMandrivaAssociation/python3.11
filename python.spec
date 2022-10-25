@@ -14,7 +14,7 @@
 # Python modules aren't linked to libpython%{dirver}
 %global _disable_ld_no_undefined 1
 
-%define docver 3.10.2
+%define docver 3.11.0
 %define dirver %(echo %{version} |cut -d. -f1-2)
 %define familyver 3
 
@@ -26,7 +26,7 @@
 %define lib32name %mklib32name python %{api} %{major}
 %define dev32name %mklib32name python -d
 
-%define pre rc2
+#define pre rc2
 
 %ifarch %{ix86} %{x86_64} ppc
 %bcond_without valgrind
@@ -98,15 +98,11 @@ Name:		python
 # (See the pyup script in the python package source directory
 # for an example of how to update)
 Version:	3.11.0
-%if "%{pre}" != ""
-Release:	0.%{pre}.1
-%else
-Release:	1
-%endif
+Release:	%{?pre:0.%{pre}.}1
 License:	Modified CNRI Open Source License
 Group:		Development/Python
 Url:		http://www.python.org/
-Source0:	http://www.python.org/ftp/python/%{version}/Python-%{version}%{pre}.tar.xz
+Source0:	http://www.python.org/ftp/python/%{version}/Python-%{version}%{?pre:%{pre}}.tar.xz
 Source1:	http://www.python.org/ftp/python/doc/%{docver}/python-%{docver}-docs-html.tar.bz2
 Source2:	python3.macros
 Source3:	pybytecompile.macros
@@ -334,7 +330,7 @@ Libraries for use with the 32-bit python interpreter
 %endif
 
 %prep
-%autosetup -p1 -n Python-%{version}%{pre}
+%autosetup -p1 -n Python-%{version}%{?pre:%{pre}}
 
 # docs
 mkdir html
