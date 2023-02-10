@@ -14,7 +14,7 @@
 # Python modules aren't linked to libpython%{dirver}
 %global _disable_ld_no_undefined 1
 
-%define docver 3.11.1
+%define docver 3.11.2
 %define dirver %(echo %{version} |cut -d. -f1-2)
 %define familyver 3
 
@@ -97,7 +97,7 @@ Name:		python
 # adapt the other packages.
 # (See the pyup script in the python package source directory
 # for an example of how to update)
-Version:	3.11.1
+Version:	3.11.2
 Release:	%{?pre:0.%{pre}.}1
 License:	Modified CNRI Open Source License
 Group:		Development/Python
