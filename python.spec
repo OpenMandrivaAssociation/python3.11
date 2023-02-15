@@ -98,7 +98,7 @@ Name:		python
 # (See the pyup script in the python package source directory
 # for an example of how to update)
 Version:	3.11.2
-Release:	%{?pre:0.%{pre}.}1
+Release:	%{?pre:0.%{pre}.}2
 License:	Modified CNRI Open Source License
 Group:		Development/Python
 Url:		http://www.python.org/
@@ -360,7 +360,7 @@ rm -fr Modules/zlib
 # Various violations, including in object.h
 # (tpg) https://maskray.me/blog/2021-05-09-fno-semantic-interposition
 %global optflags %{optflags} -O2 -fPIC -fno-strict-aliasing -fno-semantic-interposition -Wl,-Bsymbolic
-%global build_ldflags %{ldflags} -fno-semantic-interposition -Wl,-Bsymbolic
+%global build_ldflags %{build_ldflags} -fno-semantic-interposition -Wl,-Bsymbolic
 
 rm -f Modules/Setup.local
 
@@ -420,7 +420,7 @@ cd build
 	--enable-static \
 	--with-pymalloc \
 	--enable-ipv6=yes \
-	--with-lto=full \
+	--with-lto=thin \
 	--with-computed-gotos=yes \
 	--with-ssl-default-suites=openssl \
 %if %{with valgrind}
