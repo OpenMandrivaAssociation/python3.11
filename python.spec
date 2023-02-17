@@ -117,6 +117,9 @@ Patch12:	python-3.8.0-c++atomics.patch
 Patch13:	0005-Improve-distutils-C-support.patch
 Patch14:	python-3.7.1-dont-build-testembed-with-c++.patch
 Patch184:	00201-fix-memory-leak-in-gdbm.patch
+# (tpg) add surrpot for LLVM/Bolt
+# https://github.com/faster-cpython/ideas/issues/224
+Patch200:	Add-support-for-the-BOLT-post-link-binary-optimizer.patch
 # (tpg) ClearLinux patches
 Patch500:	0002-Skip-tests-TODO-fix-skips.patch
 
@@ -146,6 +149,7 @@ BuildRequires:	valgrind-devel
 BuildConflicts:	python-pyxml
 %ifnarch %{riscv}
 BuildRequires:	clang
+BuildRequires:	llvm-bolt
 %endif
 Obsoletes:	python3 < %{EVRD}
 Provides:	python3 = %{EVRD}
@@ -418,6 +422,7 @@ cd build
 	--enable-loadable-sqlite-extensions \
 	--enable-shared \
 	--enable-static \
+	--enable-bolt \
 	--with-pymalloc \
 	--enable-ipv6=yes \
 	--with-lto=thin \
