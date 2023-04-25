@@ -422,7 +422,10 @@ cd build
 	--enable-loadable-sqlite-extensions \
 	--enable-shared \
 	--enable-static \
+%if 0
+Temporarily disabled because it crashes with clang 16.0.2
 	--enable-bolt \
+%endif
 	--with-pymalloc \
 	--enable-ipv6=yes \
 	--with-lto=thin \
