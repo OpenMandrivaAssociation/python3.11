@@ -34,6 +34,10 @@
 %bcond_with valgrind
 %endif
 
+# Let's make tkinter optional -- we may not have more obscure
+# stuff like TCL/Tk when bootstrapping a new architecture
+%bcond_without tkinter
+
 # weird stuff
 # pip not available if python package built with pip
 # * build without pip files lead to good package
@@ -138,8 +142,6 @@ BuildRequires:	pkgconfig(libtirpc)
 BuildRequires:	pkgconfig(ncursesw)
 BuildRequires:	pkgconfig(openssl)
 BuildRequires:	pkgconfig(sqlite3)
-BuildRequires:	pkgconfig(tcl)
-BuildRequires:	pkgconfig(tk)
 BuildRequires:	pkgconfig(zlib)
 BuildRequires:	pkgconfig(uuid)
 #BuildRequires:	python2
@@ -155,7 +157,11 @@ Obsoletes:	python3 < %{EVRD}
 Provides:	python3 = %{EVRD}
 Provides:	python(abi) = %{dirver}
 Provides:	/usr/bin/python%{dirver}mu
+%if %{with tkinter}
+BuildRequires:	pkgconfig(tcl)
+BuildRequires:	pkgconfig(tk)
 Conflicts:	tkinter3 < %{EVRD}
+%endif
 Conflicts:	%{libname}-devel < 3.1.2-4
 Conflicts:	%{devname} < 3.2.2-3
 Conflicts:	python-pyxml
@@ -512,6 +518,7 @@ install Misc/valgrind-python.supp -D %{buildroot}%{_libdir}/valgrind/valgrind-py
 %endif
 
 mkdir -p %{buildroot}%{_datadir}/applications
+%if %{with tkinter}
 cat > %{buildroot}%{_datadir}/applications/mandriva-tkinter3.desktop << EOF
 [Desktop Entry]
 Name=IDLE
@@ -522,6 +529,7 @@ Terminal=false
 Type=Application
 Categories=Development;IDE;
 EOF
+%endif
 
 cat > %{buildroot}%{_datadir}/applications/mandriva-%{name}-docs.desktop << EOF
 [Desktop Entry]
@@ -619,7 +627,9 @@ find html -type f |xargs chmod 0644
 
 %dir %{_libdir}/python*/config-*
 %{_libdir}/python*/config*/Makefile
+%if %{with tkinter}
 %exclude %{_libdir}/python*/lib-dynload/_tkinter.*.so
+%endif
 
 # HACK: build fails without this (TODO: investigate rpm)
 %dir %{_libdir}/python*
@@ -724,6 +734,7 @@ find html -type f |xargs chmod 0644
 %{_datadir}/applications/mandriva-%{name}-docs.desktop
 %{_mandir}/man*/*
 
+%if %{with tkinter}
 %files -n tkinter
 %{_libdir}/python*/tkinter/
 %exclude %{_libdir}/python%{dirver}/tkinter/test
@@ -734,6 +745,7 @@ find html -type f |xargs chmod 0644
 %files -n tkinter-apps
 %{_bindir}/idle3*
 %{_datadir}/applications/mandriva-tkinter3.desktop
+%endif
 
 %files test
 %{_libdir}/python*/test/
@@ -744,7 +756,9 @@ find html -type f |xargs chmod 0644
 %{_libdir}/python%{dirver}/lib-dynload/_testcapi.*.so
 %{_libdir}/python%{dirver}/lib-dynload/_testimportmultiple.*.so
 %{_libdir}/python%{dirver}/lib2to3/tests
+%if %{with tkinter}
 %{_libdir}/python%{dirver}/tkinter/test
+%endif
 %{_libdir}/python%{dirver}/unittest/test
 
 %if %{with compat32}
@@ -785,7 +799,9 @@ find html -type f |xargs chmod 0644
 %{_prefix}/lib/python%{dirver}/re
 %{_prefix}/lib/python%{dirver}/sqlite3
 %{_prefix}/lib/python%{dirver}/test
+%if %{with tkinter}
 %{_prefix}/lib/python%{dirver}/tkinter
+%endif
 %{_prefix}/lib/python%{dirver}/tomllib
 %{_prefix}/lib/python%{dirver}/turtledemo
 %{_prefix}/lib/python%{dirver}/unittest
