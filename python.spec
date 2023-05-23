@@ -405,6 +405,19 @@ export CFLAGS="%{optflags} -D_GNU_SOURCE -fPIC -fwrapv -I/usr/include/ncursesw"
 export CPPFLAGS="%{optflags} -D_GNU_SOURCE -fPIC -fwrapv -I/usr/include/ncursesw"
 export LDFLAGS="${CFLAGS}"
 
+if echo %{__cc} |grep -q clang; then
+	LTO=thin
+else
+	LTO=yes
+fi
+
+%if %{cross_compiling}
+cat >config.site <<EOF
+ac_cv_file__dev_ptmx=yes
+ac_cv_file__dev_ptc=no
+EOF
+export CONFIG_SITE="$(pwd)/config.site ${CONFIG_SITE}"
+%endif
 mkdir build
 cd build
 %configure \
@@ -423,12 +436,15 @@ cd build
 	--enable-shared \
 	--enable-static \
 %if 0
-Temporarily disabled because it crashes with clang 16.0.2
+# Disabled for now, since it causes buildtime crashes with llvm 16.0.x
 	--enable-bolt \
 %endif
+%if %{cross_compiling}
+	--with-build-python=%{_bindir}/python \
+%endif
+	--with-lto=$LTO \
 	--with-pymalloc \
 	--enable-ipv6=yes \
-	--with-lto=thin \
 	--with-computed-gotos=yes \
 	--with-ssl-default-suites=openssl \
 %if %{with valgrind}
