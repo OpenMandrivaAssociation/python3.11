@@ -557,6 +557,15 @@ find %{buildroot} -name \*.bat -delete
 # Get rid of EXE files:
 find %{buildroot} -name \*.exe -delete
 
+%if ! %{with tkinter}
+# With tkinter disabled, python's build system is still dumb enough to
+# build other parts that rely on tkinter...
+# Even the python parts of tkinter itself.
+rm -rf \
+	%{buildroot}%{_libdir}/python*/{idlelib,tkinter,turtledemo} \
+	%{buildroot}%{_bindir}/idle*
+%endif
+
 mkdir -p %{buildroot}%{_sysconfdir}/profile.d/
 
 cat > %{buildroot}%{_sysconfdir}/profile.d/30python.sh << 'EOF'
