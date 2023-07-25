@@ -26,6 +26,13 @@
 %define lib32name %mklib32name python %{api} %{major}
 %define dev32name %mklib32name python -d
 
+%if %{cross_compiling}
+# Because we currently miss libclang_rt.profile-riscv64.a
+# in crosscompilers, and python's build system builds
+# profiling code
+%define prefer_gcc 1
+%endif
+
 #define pre rc2
 
 %ifarch %{ix86} %{x86_64} ppc
@@ -436,7 +443,7 @@ cd build
 %endif
 	--with-platlibdir=%{_lib} \
 	--with-system-expat \
-	--with-cxx-main=%{__cxx} \
+	--with-cxx-main="%{__cxx}" \
 	--with-system-ffi \
 	--enable-loadable-sqlite-extensions \
 	--enable-shared \
