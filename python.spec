@@ -109,7 +109,7 @@ Name:		python
 # (See the pyup script in the python package source directory
 # for an example of how to update)
 Version:	3.11.4
-Release:	%{?pre:0.%{pre}.}1
+Release:	%{?pre:0.%{pre}.}2
 License:	Modified CNRI Open Source License
 Group:		Development/Python
 Url:		http://www.python.org/
@@ -163,7 +163,8 @@ BuildRequires:	llvm-bolt
 Obsoletes:	python3 < %{EVRD}
 Provides:	python3 = %{EVRD}
 Provides:	python(abi) = %{dirver}
-Provides:	/usr/bin/python%{dirver}mu
+Provides:	%{_bindir}/python%{dirver}mu
+Provides:	%{_bindir}/python3
 %if %{with tkinter}
 BuildRequires:	pkgconfig(tcl)
 BuildRequires:	pkgconfig(tk)
