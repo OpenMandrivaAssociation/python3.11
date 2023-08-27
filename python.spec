@@ -109,7 +109,7 @@ Name:		python
 # (See the pyup script in the python package source directory
 # for an example of how to update)
 Version:	3.11.5
-Release:	%{?pre:0.%{pre}.}1
+Release:	%{?pre:0.%{pre}.}2
 License:	Modified CNRI Open Source License
 Group:		Development/Python
 Url:		http://www.python.org/
@@ -124,6 +124,11 @@ Patch5:		https://src.fedoraproject.org/rpms/python3.11/raw/rawhide/f/00328-pyc-t
 
 Patch9:		python-3.6.2-clang-5.0.patch
 Patch10:	Python-3.8.0-c++.patch
+# Drop support for sqlite enable_shared_cache
+# sqlite can and should be compiled without support for it
+# (and the function is scheduled for removal in python 3.12)
+# https://www.sqlite.org/compile.html#omit_shared_cache
+Patch11:	python-3.11-sqlite-no-shared_cache.patch
 Patch12:	python-3.8.0-c++atomics.patch
 Patch13:	0005-Improve-distutils-C-support.patch
 Patch14:	python-3.7.1-dont-build-testembed-with-c++.patch
@@ -632,6 +637,7 @@ find html -type f |xargs chmod 0644
 # (e.g. due to broken dependency libraries)
 [ -e %{buildroot}%{_libdir}/python*/lib-dynload/_curses.*.so ] || exit 1
 [ -e %{buildroot}%{_libdir}/python*/lib-dynload/_lzma.*.so ] || exit 1
+[ -e %{buildroot}%{_libdir}/python*/lib-dynload/_sqlite3.*.so ] || exit 1
 
 %files
 %doc README.omv

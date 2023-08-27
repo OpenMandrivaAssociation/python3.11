@@ -1,0 +1,24 @@
+diff -up Python-3.11.4/configure.ac.omv~ Python-3.11.4/configure.ac
+--- Python-3.11.4/configure.ac.omv~	2023-08-27 20:15:50.371064507 +0100
++++ Python-3.11.4/configure.ac	2023-08-27 20:16:01.591090986 +0100
+@@ -3874,7 +3874,6 @@ dnl hence CPPFLAGS instead of CFLAGS.
+       PY_CHECK_SQLITE_FUNC([sqlite3_column_decltype])
+       PY_CHECK_SQLITE_FUNC([sqlite3_column_double])
+       PY_CHECK_SQLITE_FUNC([sqlite3_complete])
+-      PY_CHECK_SQLITE_FUNC([sqlite3_enable_shared_cache])
+       PY_CHECK_SQLITE_FUNC([sqlite3_progress_handler])
+       PY_CHECK_SQLITE_FUNC([sqlite3_result_double])
+       PY_CHECK_SQLITE_FUNC([sqlite3_set_authorizer])
+diff -up Python-3.11.4/Modules/_sqlite/clinic/module.c.h.omv~ Python-3.11.4/Modules/_sqlite/clinic/module.c.h
+diff -up Python-3.11.4/Modules/_sqlite/module.c.omv~ Python-3.11.4/Modules/_sqlite/module.c
+--- Python-3.11.4/Modules/_sqlite/module.c.omv~	2023-08-27 20:17:03.001235918 +0100
++++ Python-3.11.4/Modules/_sqlite/module.c	2023-08-27 20:17:29.191297729 +0100
+@@ -120,7 +120,7 @@ pysqlite_enable_shared_cache_impl(PyObje
+ {
+     int rc;
+ 
+-    rc = sqlite3_enable_shared_cache(do_enable);
++    rc = SQLITE_MISUSE; //sqlite3_enable_shared_cache(do_enable);
+ 
+     if (rc != SQLITE_OK) {
+         pysqlite_state *state = pysqlite_get_state(module);
