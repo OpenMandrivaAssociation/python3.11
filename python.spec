@@ -108,8 +108,8 @@ Name:		python
 # adapt the other packages.
 # (See the pyup script in the python package source directory
 # for an example of how to update)
-Version:	3.11.5
-Release:	%{?pre:0.%{pre}.}3
+Version:	3.11.6
+Release:	%{?pre:0.%{pre}.}1
 License:	Modified CNRI Open Source License
 Group:		Development/Python
 Url:		http://www.python.org/
