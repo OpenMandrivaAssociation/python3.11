@@ -1,0 +1,16 @@
+%buildsystem_python_generate_buildrequires() \
+	echo 'python' \
+	if [ -e pyproject.toml ]; then \
+		echo 'python%{pyver}dist(pip)' \
+	else \
+		echo 'python%{pyver}dist(setuptools)' \
+	fi
+
+%buildsystem_python_conf() \
+	%{nil}
+
+%buildsystem_python_build() \
+	%py_build
+
+%buildsystem_python_install() \
+	%py_install

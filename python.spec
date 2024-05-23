@@ -109,7 +109,7 @@ Name:		python
 # (See the pyup script in the python package source directory
 # for an example of how to update)
 Version:	3.11.9
-Release:	%{?pre:0.%{pre}.}1
+Release:	%{?pre:0.%{pre}.}2
 License:	Modified CNRI Open Source License
 Group:		Development/Python
 Url:		http://www.python.org/
@@ -117,6 +117,7 @@ Source0:	http://www.python.org/ftp/python/%{version}/Python-%{version}%{?pre:%{p
 Source1:	http://www.python.org/ftp/python/doc/%{docver}/python-%{docver}-docs-html.tar.bz2
 Source2:	python3.macros
 Source3:	pybytecompile.macros
+Source4:	macros.buildsys.python
 Source100:	%{name}.rpmlintrc
 Patch1:		https://src.fedoraproject.org/rpms/python3.11/raw/rawhide/f/00001-rpath.patch
 Patch4:		https://src.fedoraproject.org/rpms/python3.11/raw/rawhide/f/00251-change-user-install-location.patch
@@ -617,8 +618,9 @@ except:
 EOF
 
 mkdir -p %{buildroot}%{_sysconfdir}/rpm/macros.d
-install -m644 %{SOURCE2} %{buildroot}%{_sysconfdir}/rpm/macros.d/
-install -m644 %{SOURCE3} %{buildroot}/%{_sysconfdir}/rpm/macros.d/
+install -m644 %{S:2} %{buildroot}%{_sysconfdir}/rpm/macros.d/
+install -m644 %{S:3} %{buildroot}%{_sysconfdir}/rpm/macros.d/
+install -D -m644 %{S:4} %{buildroot}%{_rpmmacrodir}/macros.buildsys.python
 # We are the default version...
 sed -e 's,python3,python,g;s,py3,py,g' %{SOURCE2} >%{buildroot}%{_sysconfdir}/rpm/macros.d/python.macros
 
@@ -643,6 +645,7 @@ find html -type f |xargs chmod 0644
 %files
 %doc README.omv
 %{_sysconfdir}/rpm/macros.d/*.macros
+%{_rpmmacrodir}/macros.buildsys.python
 %{_sysconfdir}/profile.d/*
 %config(noreplace) %{_sysconfdir}/pythonrc.py
 %{_includedir}/python*/pyconfig.h
