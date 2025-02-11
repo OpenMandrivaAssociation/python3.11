@@ -144,7 +144,6 @@ Patch500:	0002-Skip-tests-TODO-fix-skips.patch
 
 BuildRequires:	autoconf
 BuildRequires:	autoconf-archive
-BuildRequires:	blt
 BuildRequires:	pkgconfig(bzip2)
 BuildRequires:	db-devel
 BuildRequires:	gdbm-devel
