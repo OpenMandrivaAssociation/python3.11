@@ -133,7 +133,9 @@ Patch11:	python-3.11-sqlite-no-shared_cache.patch
 Patch12:	python-3.8.0-c++atomics.patch
 Patch13:	0005-Improve-distutils-C-support.patch
 Patch14:	python-3.7.1-dont-build-testembed-with-c++.patch
-Patch184:	00201-fix-memory-leak-in-gdbm.patch
+Patch15:	00201-fix-memory-leak-in-gdbm.patch
+# Backport Tk 9.0 support for tkinter
+Patch16:	tkinter-tcl9.patch
 # (tpg) add surrpot for LLVM/Bolt
 # https://github.com/faster-cpython/ideas/issues/224
 Patch200:	Add-support-for-the-BOLT-post-link-binary-optimizer.patch
@@ -565,8 +567,8 @@ find %{buildroot} -type f \( -name "test_binascii.py*" -o -name "test_grp.py*" -
 chmod u+w %{buildroot}%{_libdir}/libpython%{api}*.so.1.0 %{buildroot}%{_libdir}/libpython3.so
 
 # drop backup files
-find %{buildroot} -name "*~" -delete
-find . -name "*~" -delete
+#find %{buildroot} -name "*~" -delete
+#find . -name "*~" -delete
 
 # Get rid of DOS batch files:
 find %{buildroot} -name \*.bat -delete
