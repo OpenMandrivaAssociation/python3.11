@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Karolina Surma <ksurma@redhat.com>
+Date: Wed, 9 Apr 2025 10:47:48 +0200
+Subject: 00454: Invoke regen-token rst with rstfile as an argument
+
+Proposed upstream: https://github.com/python/cpython/pull/132304
+---
+ Makefile.pre.in | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile.pre.in b/Makefile.pre.in
+index 3bd4495f95..d7a4e4b320 100644
+--- a/Makefile.pre.in
++++ b/Makefile.pre.in
+@@ -1784,7 +1784,8 @@ regen-token:
+ 	# using Tools/build/generate_token.py
+ 	$(PYTHON_FOR_REGEN) $(srcdir)/Tools/build/generate_token.py rst \
+ 		$(srcdir)/Grammar/Tokens \
+-		$(srcdir)/Doc/library/token-list.inc
++		$(srcdir)/Doc/library/token-list.inc \
++		$(srcdir)/Doc/library/token.rst
+ 	# Regenerate Include/internal/pycore_token.h from Grammar/Tokens
+ 	# using Tools/build/generate_token.py
+ 	$(PYTHON_FOR_REGEN) $(srcdir)/Tools/build/generate_token.py h \

@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Karolina Surma <ksurma@redhat.com>
+Date: Thu, 10 Apr 2025 15:11:41 +0200
+Subject: 00456: Find the correct group name in test_group_no_follow_symlinks
+
+Proposed upstream: https://github.com/python/cpython/pull/132357
+---
+ Lib/test/test_pathlib/test_pathlib.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Lib/test/test_pathlib/test_pathlib.py b/Lib/test/test_pathlib/test_pathlib.py
+index 1f01ce40da..2b9aad1426 100644
+--- a/Lib/test/test_pathlib/test_pathlib.py
++++ b/Lib/test/test_pathlib/test_pathlib.py
+@@ -781,7 +781,7 @@ def test_group_no_follow_symlinks(self):
+         os.chown(link, -1, gid_2, follow_symlinks=False)
+ 
+         expected_gid = link.stat(follow_symlinks=False).st_gid
+-        expected_name = self._get_pw_name_or_skip_test(expected_gid)
++        expected_name = self._get_gr_name_or_skip_test(expected_gid)
+ 
+         self.assertEqual(expected_gid, gid_2)
+         self.assertEqual(expected_name, link.group(follow_symlinks=False))

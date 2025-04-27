@@ -1,21 +1,12 @@
-diff -up Python-3.11.0b1/Makefile.pre.in.8~ Python-3.11.0b1/Makefile.pre.in
---- Python-3.11.0b1/Makefile.pre.in.8~	2022-05-08 22:03:00.426309062 +0200
-+++ Python-3.11.0b1/Makefile.pre.in	2022-05-08 22:03:54.286511231 +0200
-@@ -957,7 +957,7 @@ regen-re: $(BUILDPYTHON)
- 	$(RUNSHARED) ./$(BUILDPYTHON) $(srcdir)/Tools/scripts/generate_re_casefix.py $(srcdir)/Lib/re/_casefix.py
+diff -up Python-3.13.3/Makefile.pre.in.8~ Python-3.13.3/Makefile.pre.in
+--- Python-3.13.3/Makefile.pre.in.8~	2025-04-25 23:26:06.299691205 +0200
++++ Python-3.13.3/Makefile.pre.in	2025-04-25 23:27:05.629647086 +0200
+@@ -1432,7 +1432,7 @@ regen-re: $(BUILDPYTHON)
+ 	$(RUNSHARED) ./$(BUILDPYTHON) $(srcdir)/Tools/build/generate_re_casefix.py $(srcdir)/Lib/re/_casefix.py
  
  Programs/_testembed: Programs/_testembed.o $(LINK_PYTHON_DEPS)
 -	$(LINKCC) $(PY_CORE_LDFLAGS) $(LINKFORSHARED) -o $@ Programs/_testembed.o $(LINK_PYTHON_OBJS) $(LIBS) $(MODLIBS) $(SYSLIBS)
 +	$(CC) $(PY_CORE_LDFLAGS) $(LINKFORSHARED) -o $@ Programs/_testembed.o $(LINK_PYTHON_OBJS) $(LIBS) $(MODLIBS) $(SYSLIBS)
  
  ############################################################################
- # "Bootstrap Python" used to run deepfreeze.py
-@@ -1241,7 +1241,7 @@ Programs/python.o: $(srcdir)/Programs/py
- 	$(MAINCC) -c $(PY_CORE_CFLAGS) -o $@ $(srcdir)/Programs/python.c
- 
- Programs/_testembed.o: $(srcdir)/Programs/_testembed.c Programs/test_frozenmain.h
--	$(MAINCC) -c $(PY_CORE_CFLAGS) -o $@ $(srcdir)/Programs/_testembed.c
-+	$(CC) -c $(PY_CORE_CFLAGS) -o $@ $(srcdir)/Programs/_testembed.c
- 
- Modules/_sre/sre.o: $(srcdir)/Modules/_sre/sre.c $(srcdir)/Modules/_sre/sre.h $(srcdir)/Modules/_sre/sre_constants.h $(srcdir)/Modules/_sre/sre_lib.h
- 
+ # "Bootstrap Python" used to run Programs/_freeze_module.py

@@ -1,9 +1,3 @@
-# libpython is used by tdb, tdb is used by pulseaudio,
-# pulseaudio is used by wine
-%ifarch %{x86_64}
-%bcond_without compat32
-%endif
-
 # Not really -- but python's build system enables lto in its own
 # different way, no need for 2 conflicting approaches
 %define _disable_lto 1
@@ -12,7 +6,7 @@
 %define _python_bytecompile_build 0
 
 # Python modules aren't linked to libpython%{dirver}
-%global _disable_ld_no_undefined 1
+%define _disable_ld_no_undefined 1
 
 %define docver %{version}
 %define dirver %(echo %{version} |cut -d. -f1-2)
@@ -108,7 +102,7 @@ Name:		python
 # adapt the other packages.
 # (See the pyup script in the python package source directory
 # for an example of how to update)
-Version:	3.11.11
+Version:	3.13.3
 Release:	%{?pre:0.%{pre}.}1
 License:	Modified CNRI Open Source License
 Group:		Development/Python
@@ -119,28 +113,6 @@ Source2:	python3.macros
 Source3:	pybytecompile.macros
 Source4:	macros.buildsys.python
 Source100:	%{name}.rpmlintrc
-Patch1:		https://src.fedoraproject.org/rpms/python3.11/raw/rawhide/f/00001-rpath.patch
-Patch4:		https://src.fedoraproject.org/rpms/python3.11/raw/rawhide/f/00251-change-user-install-location.patch
-Patch5:		https://src.fedoraproject.org/rpms/python3.11/raw/rawhide/f/00328-pyc-timestamp-invalidation-mode.patch
-
-Patch9:		python-3.6.2-clang-5.0.patch
-Patch10:	Python-3.8.0-c++.patch
-# Drop support for sqlite enable_shared_cache
-# sqlite can and should be compiled without support for it
-# (and the function is scheduled for removal in python 3.12)
-# https://www.sqlite.org/compile.html#omit_shared_cache
-Patch11:	python-3.11-sqlite-no-shared_cache.patch
-Patch12:	python-3.8.0-c++atomics.patch
-Patch13:	0005-Improve-distutils-C-support.patch
-Patch14:	python-3.7.1-dont-build-testembed-with-c++.patch
-Patch15:	00201-fix-memory-leak-in-gdbm.patch
-# Backport Tk 9.0 support for tkinter
-Patch16:	tkinter-tcl9.patch
-# (tpg) add surrpot for LLVM/Bolt
-# https://github.com/faster-cpython/ideas/issues/224
-Patch200:	Add-support-for-the-BOLT-post-link-binary-optimizer.patch
-# (tpg) ClearLinux patches
-Patch500:	0002-Skip-tests-TODO-fix-skips.patch
 
 BuildRequires:	autoconf
 BuildRequires:	autoconf-archive
@@ -182,13 +154,6 @@ Conflicts:	tkinter3 < %{EVRD}
 Conflicts:	%{libname}-devel < 3.1.2-4
 Conflicts:	%{devname} < 3.2.2-3
 Conflicts:	python-pyxml
-%if %{with compat32}
-BuildRequires:	devel(libexpat)
-BuildRequires:	devel(libffi)
-BuildRequires:	devel(libz)
-BuildRequires:	devel(libbz2)
-BuildRequires:	devel(libncursesw)
-%endif
 
 # Used to be separate packages, bundled with core now
 %rename	python-ctypes
@@ -200,6 +165,22 @@ BuildRequires:	devel(libncursesw)
 Provides:	python3egg(setuptools)
 Provides:	python3egg(distribute)
 %endif
+
+%patchlist
+https://src.fedoraproject.org/rpms/python3.13/raw/rawhide/f/00251-change-user-install-location.patch
+https://src.fedoraproject.org/rpms/python3.11/raw/rawhide/f/00328-pyc-timestamp-invalidation-mode.patch
+https://src.fedoraproject.org/rpms/python3.13/raw/rawhide/f/00454-invoke-regen-token-rst-with-rstfile-as-an-argument.patch
+https://src.fedoraproject.org/rpms/python3.13/raw/rawhide/f/00456-find-the-correct-group-name-in-test_group_no_follow_symlinks.patch
+https://src.fedoraproject.org/rpms/python3.13/raw/rawhide/f/00459-apply-intel-control-flow-technology-for-x86-64.patch
+
+python-3.6.2-clang-5.0.patch
+Python-3.8.0-c++.patch
+# FIXME check if this is still needed (the code has changed a lot
+# and claims to support C++ now)
+#python-3.8.0-c++atomics.patch
+python-3.7.1-dont-build-testembed-with-c++.patch
+00201-fix-memory-leak-in-gdbm.patch
+python-3.13-disable-broken-sqlite-test.patch
 
 %description
 Python is an interpreted, interactive, object-oriented programming
@@ -320,42 +301,6 @@ Requires:	%{name} = %{EVRD}
 The self-test suite for the Python interpreter.
 This is only useful to test Python itself.
 
-%if %{with compat32}
-%package -n %{lib32name}
-Summary:	Shared libraries for Python %{version} (32-bit)
-Group:		System/Libraries
-
-%description -n %{lib32name}
-This packages contains Python shared object library.  Python is an
-interpreted, interactive, object-oriented programming language often
-compared to Tcl, Perl, Scheme or Java.
-
-%package -n %{dev32name}
-Summary:	The libraries and header files needed for Python development (32-bit)
-Group:		Development/Python
-Requires:	%{devname} = %{EVRD}
-Requires:	%{lib32name} = %{EVRD}
-
-%description -n %{dev32name}
-The Python programming language's interpreter can be extended with
-dynamically loaded extensions and can be embedded in other programs.
-This package contains the header files and libraries needed to do
-these types of tasks.
-
-Install %{dev32name} if you want to develop Python extensions.  The
-python package will also need to be installed.  You'll probably also
-want to install the python-docs package, which contains Python
-documentation.
-
-%package -n python32-libs
-Summary:	Libraries for use with the 32-bit python interpreter
-Group:		Development/Python
-Requires:	%{lib32name} = %{EVRD}
-
-%description -n python32-libs
-Libraries for use with the 32-bit python interpreter
-%endif
-
 %prep
 %autosetup -p1 -n Python-%{version}%{?pre:%{pre}}
 
@@ -373,11 +318,6 @@ you can :
 2) create a empty file \$HOME/.pythonrc.py
 3) change %{_sysconfdir}/pythonrc.py
 EOF
-
-#   Remove embedded copy of libffi:
-for SUBDIR in darwin libffi_osx ; do
-  rm -r Modules/_ctypes/$SUBDIR || exit 1 ;
-done
 
 # Ensure that internal copies of expat, libffi and zlib are not used.
 rm -fr Modules/expat
@@ -403,23 +343,6 @@ autoreconf -vfi
 export ax_cv_c_float_words_bigendian=no
 
 export CONFIGURE_TOP="$(pwd)"
-
-%if %{with compat32}
-mkdir build32
-cd build32
-%configure32 \
-	--without-ensurepip \
-	--with-system-expat \
-	--with-system-ffi \
-	--disable-optimizations \
-	--enable-shared \
-	--enable-ipv6 \
-	--with-ssl-default-suites=openssl \
-	--with-computed-gotos
-unset CFLAGS CXXFLAGS CPPFLAGS RPM_OPT_FLAGS LDFLAGS RPM_LD_FLAGS
-make
-cd ..
-%endif
 
 # to fix curses module build
 # https://bugs.mageia.org/show_bug.cgi?id=6702
@@ -477,9 +400,6 @@ cd build
 
 # (misc) if the home is nfs mounted, rmdir fails due to delay
 export TMP="/tmp" TMPDIR="/tmp"
-# This is used for bootstrapping - and we don't want to
-# require ourselves
-sed -i -e 's,env python,python2,' ../Python/makeopcodetargets.py
 %ifarch riscv64
 # wipe 11 hours of tests
 rm -frv Lib/test/test_*
@@ -506,21 +426,7 @@ echo 'install_dir='"%{buildroot}%{_bindir}" >>setup.cfg
 
 # python is not GNU and does not know fsstd
 mkdir -p %{buildroot}%{_mandir}
-%if %{with compat32}
-%make_install -C build32 LN="ln -sf"
-mv %{buildroot}%{_includedir}/python%{dirver}/pyconfig.h %{buildroot}%{_includedir}/python%{dirver}/pyconfig-32.h 
-%endif
 %make_install -C build LN="ln -sf"
-%if %{with compat32}
-mv %{buildroot}%{_includedir}/python%{dirver}/pyconfig.h %{buildroot}%{_includedir}/python%{dirver}/pyconfig-64.h 
-cat >%{buildroot}%{_includedir}/python%{dirver}/pyconfig.h <<'EOF'
-#ifdef __i386__
-#include "pyconfig-32.h"
-#else
-#include "pyconfig-64.h"
-#endif
-EOF
-%endif
 
 # Why doesn't the static lib get installed even if it's built?
 cp build/libpython%{api}.a %{buildroot}%{_libdir}/
@@ -629,10 +535,6 @@ ln -s python3 %{buildroot}%{_bindir}/python
 ln -s pydoc3 %{buildroot}%{_bindir}/pydoc
 ln -s python3-config %{buildroot}%{_bindir}/python-config
 
-# Install pathfix.py to bindir
-# See https://github.com/fedora-python/python-rpm-porting/issues/24
-cp -p Tools/scripts/pathfix.py %{buildroot}%{_bindir}/
-
 # Fix permissions on docs
 find html -type d |xargs chmod 0755
 find html -type f |xargs chmod 0644
@@ -650,9 +552,6 @@ find html -type f |xargs chmod 0644
 %{_sysconfdir}/profile.d/*
 %config(noreplace) %{_sysconfdir}/pythonrc.py
 %{_includedir}/python*/pyconfig.h
-%if %{with compat32}
-%{_includedir}/python*/pyconfig-64.h
-%endif
 
 %dir %{_libdir}/python*/config-*
 %{_libdir}/python*/config*/Makefile
@@ -669,11 +568,8 @@ find html -type f |xargs chmod 0644
 %{_libdir}/python%{dirver}/collections
 %{_libdir}/python%{dirver}/concurrent
 %{_libdir}/python%{dirver}/ctypes
-%exclude %{_libdir}/python%{dirver}/ctypes/test
 %{_libdir}/python%{dirver}/curses
 %{_libdir}/python%{dirver}/dbm
-%{_libdir}/python%{dirver}/distutils
-%exclude %{_libdir}/python%{dirver}/distutils/tests
 %{_libdir}/python%{dirver}/email
 %{_libdir}/python%{dirver}/encodings
 %{_libdir}/python%{dirver}/html
@@ -685,31 +581,29 @@ find html -type f |xargs chmod 0644
 %exclude %{_libdir}/python%{dirver}/lib-dynload/_testbuffer.*.so
 %exclude %{_libdir}/python%{dirver}/lib-dynload/_testcapi.*.so
 %exclude %{_libdir}/python%{dirver}/lib-dynload/_testimportmultiple.*.so
-%{_libdir}/python%{dirver}/lib2to3
-%exclude %{_libdir}/python%{dirver}/lib2to3/tests
 %{_libdir}/python%{dirver}/logging
 %{_libdir}/python%{dirver}/multiprocessing
+%{_libdir}/python%{dirver}/pathlib
 %{_libdir}/python%{dirver}/__phello__
+%{_libdir}/python%{dirver}/_pyrepl
 %{_libdir}/python%{dirver}/pydoc_data
 %{_libdir}/python%{dirver}/re
 %{_libdir}/python%{dirver}/site-packages
 %{_libdir}/python%{dirver}/sqlite3
+%{_libdir}/python%{dirver}/sysconfig
 %{_libdir}/python%{dirver}/tomllib
 %{_libdir}/python%{dirver}/unittest
-%exclude %{_libdir}/python%{dirver}/unittest/test
 %{_libdir}/python%{dirver}/urllib
 %{_libdir}/python%{dirver}/venv
 %{_libdir}/python%{dirver}/wsgiref*
 %{_libdir}/python%{dirver}/xml
 %{_libdir}/python%{dirver}/xmlrpc
+%{_libdir}/python%{dirver}/zipfile
 %{_libdir}/python%{dirver}/zoneinfo
 %{_bindir}/pydoc
 %{_bindir}/pydoc3*
-%{_bindir}/pathfix.py
 %{_bindir}/python
 %{_bindir}/python3*
-%{_bindir}/2to3
-%{_bindir}/2to3-%{dirver}
 %exclude %{_bindir}/python*config
 %if %{with valgrind}
 %{_libdir}/valgrind/valgrind-python3.supp
@@ -749,10 +643,6 @@ find html -type f |xargs chmod 0644
 %{_bindir}/python%{familyver}-config
 %{_libdir}/pkgconfig/python*.pc
 %exclude %{_includedir}/python*/pyconfig.h
-%if %{with compat32}
-%exclude %{_includedir}/python*/pyconfig-32.h
-%exclude %{_includedir}/python*/pyconfig-64.h
-%endif
 %exclude %{_libdir}/python*/config*/Makefile
 
 %files -n %{staticname}
@@ -766,7 +656,6 @@ find html -type f |xargs chmod 0644
 %if %{with tkinter}
 %files -n tkinter
 %{_libdir}/python*/tkinter/
-%exclude %{_libdir}/python%{dirver}/tkinter/test
 %{_libdir}/python%{dirver}/turtledemo
 %{_libdir}/python*/idlelib
 %{_libdir}/python*/lib-dynload/_tkinter.*.so
@@ -778,69 +667,7 @@ find html -type f |xargs chmod 0644
 
 %files test
 %{_libdir}/python*/test/
-%{_libdir}/python%{dirver}/ctypes/test
-%{_libdir}/python%{dirver}/distutils/tests
 %{_libdir}/python%{dirver}/lib-dynload/_ctypes_test.*.so
 %{_libdir}/python%{dirver}/lib-dynload/_testbuffer.*.so
 %{_libdir}/python%{dirver}/lib-dynload/_testcapi.*.so
 %{_libdir}/python%{dirver}/lib-dynload/_testimportmultiple.*.so
-%{_libdir}/python%{dirver}/lib2to3/tests
-%if %{with tkinter}
-%{_libdir}/python%{dirver}/tkinter/test
-%endif
-%{_libdir}/python%{dirver}/unittest/test
-
-%if %{with compat32}
-%files -n %{lib32name}
-%{_prefix}/lib/libpython%{api}.so.%{major}*
-
-%files -n %{dev32name}
-%{_includedir}/python*/pyconfig-32.h
-%{_prefix}/lib/libpython*.so
-%{_prefix}/lib/pkgconfig/python*.pc
-
-%files -n python32-libs
-%{_prefix}/lib/python%{dirver}/lib-dynload
-%dir %{_prefix}/lib/python%{dirver}
-%{_prefix}/lib/python%{dirver}/LICENSE.txt
-%{_prefix}/lib/python%{dirver}/*.py
-%{_prefix}/lib/python%{dirver}/__pycache__
-%{_prefix}/lib/python%{dirver}/__phello__
-%{_prefix}/lib/python%{dirver}/asyncio
-%{_prefix}/lib/python%{dirver}/collections
-%{_prefix}/lib/python%{dirver}/concurrent
-%{_prefix}/lib/python%{dirver}/ctypes
-%{_prefix}/lib/python%{dirver}/curses
-%{_prefix}/lib/python%{dirver}/dbm
-%{_prefix}/lib/python%{dirver}/distutils
-%{_prefix}/lib/python%{dirver}/email
-%{_prefix}/lib/python%{dirver}/encodings
-%{_prefix}/lib/python%{dirver}/ensurepip
-%{_prefix}/lib/python%{dirver}/html
-%{_prefix}/lib/python%{dirver}/http
-%{_prefix}/lib/python%{dirver}/idlelib
-%{_prefix}/lib/python%{dirver}/importlib
-%{_prefix}/lib/python%{dirver}/json
-%{_prefix}/lib/python%{dirver}/lib2to3
-%{_prefix}/lib/python%{dirver}/logging
-%{_prefix}/lib/python%{dirver}/multiprocessing
-%{_prefix}/lib/python%{dirver}/pydoc_data
-%{_prefix}/lib/python%{dirver}/re
-%{_prefix}/lib/python%{dirver}/sqlite3
-%{_prefix}/lib/python%{dirver}/test
-%if %{with tkinter}
-%{_prefix}/lib/python%{dirver}/tkinter
-%endif
-%{_prefix}/lib/python%{dirver}/tomllib
-%{_prefix}/lib/python%{dirver}/turtledemo
-%{_prefix}/lib/python%{dirver}/unittest
-%{_prefix}/lib/python%{dirver}/urllib
-%{_prefix}/lib/python%{dirver}/venv
-%{_prefix}/lib/python%{dirver}/wsgiref
-%{_prefix}/lib/python%{dirver}/xml
-%{_prefix}/lib/python%{dirver}/xmlrpc
-%{_prefix}/lib/python%{dirver}/zoneinfo
-%{_prefix}/lib/python%{dirver}/config-*
-%dir %{_prefix}/lib/python%{dirver}/site-packages
-%{_prefix}/lib/python%{dirver}/site-packages/README.txt
-%endif

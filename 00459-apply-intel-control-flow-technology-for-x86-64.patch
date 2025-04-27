@@ -1,0 +1,68 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Charalampos Stratakis <cstratak@redhat.com>
+Date: Wed, 8 Jan 2025 04:58:22 +0100
+Subject: 00459: Apply Intel Control-flow Technology for x86-64
+
+Required for mitigation against return-oriented programming (ROP) and Call or Jump Oriented Programming (COP/JOP) attacks
+
+Proposed upstream: https://github.com/python/cpython/pull/128606
+
+See also: https://sourceware.org/annobin/annobin.html/Test-cf-protection.html
+---
+ Python/asm_trampoline.S      | 22 ++++++++++++++++++++++
+ Python/perf_jit_trampoline.c |  4 ++++
+ 2 files changed, 26 insertions(+)
+
+diff --git a/Python/asm_trampoline.S b/Python/asm_trampoline.S
+index 0a3265dfee..616752459b 100644
+--- a/Python/asm_trampoline.S
++++ b/Python/asm_trampoline.S
+@@ -9,6 +9,9 @@
+ # }
+ _Py_trampoline_func_start:
+ #ifdef __x86_64__
++#if defined(__CET__) && (__CET__ & 1)
++    endbr64
++#endif
+     sub    $8, %rsp
+     call    *%rcx
+     add    $8, %rsp
+@@ -34,3 +37,22 @@ _Py_trampoline_func_start:
+     .globl	_Py_trampoline_func_end
+ _Py_trampoline_func_end:
+     .section        .note.GNU-stack,"",@progbits
++# Note for indicating the assembly code supports CET
++#if defined(__x86_64__) && defined(__CET__) && (__CET__ & 1)
++    .section    .note.gnu.property,"a"
++    .align 8
++    .long    1f - 0f
++    .long    4f - 1f
++    .long    5
++0:
++    .string  "GNU"
++1:
++    .align 8
++    .long    0xc0000002
++    .long    3f - 2f
++2:
++    .long    0x3
++3:
++    .align 8
++4:
++#endif // __x86_64__
+diff --git a/Python/perf_jit_trampoline.c b/Python/perf_jit_trampoline.c
+index 0a8945958b..e9cc7758ba 100644
+--- a/Python/perf_jit_trampoline.c
++++ b/Python/perf_jit_trampoline.c
+@@ -472,7 +472,11 @@ elf_init_ehframe(ELFObjectContext* ctx)
+                  DWRF_U8(0); /* Augmentation data. */
+     /* Registers saved in CFRAME. */
+ #ifdef __x86_64__
++#  if defined(__CET__) && (__CET__ & 1)
++                 DWRF_U8(DWRF_CFA_advance_loc | 8);
++#  else
+                  DWRF_U8(DWRF_CFA_advance_loc | 4);
++#  endif
+                  DWRF_U8(DWRF_CFA_def_cfa_offset); DWRF_UV(16);
+                  DWRF_U8(DWRF_CFA_advance_loc | 6);
+                  DWRF_U8(DWRF_CFA_def_cfa_offset); DWRF_UV(8);

@@ -1,6 +1,6 @@
-diff -up Python-3.11.0a5/Include/internal/pycore_atomic.h.6~ Python-3.11.0a5/Include/internal/pycore_atomic.h
---- Python-3.11.0a5/Include/internal/pycore_atomic.h.6~	2022-02-03 19:37:08.000000000 +0100
-+++ Python-3.11.0a5/Include/internal/pycore_atomic.h	2022-02-08 17:49:48.488052459 +0100
+diff -up Python-3.11.0a5/Include/cpython/pyatomic_std.h.6~ Python-3.11.0a5/Include/cpython/pyatomic_std.h
+--- Python-3.11.0a5/Include/cpython/pyatomic_std.h.6~	2022-02-03 19:37:08.000000000 +0100
++++ Python-3.11.0a5/Include/cpython/pyatomic_std.h	2022-02-08 17:49:48.488052459 +0100
 @@ -1,5 +1,18 @@
  #ifndef Py_ATOMIC_H
  #define Py_ATOMIC_H

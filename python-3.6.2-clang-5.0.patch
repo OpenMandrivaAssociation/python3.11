@@ -1,20 +1,21 @@
---- Python-3.6.2/Modules/posixmodule.c.omv~	2017-07-17 22:05:54.713633142 +0200
-+++ Python-3.6.2/Modules/posixmodule.c	2017-07-17 23:45:52.205621039 +0200
-@@ -8614,7 +8614,7 @@ static unsigned int
+diff -up Python-3.13.3/Modules/posixmodule.c.4~ Python-3.13.3/Modules/posixmodule.c
+--- Python-3.13.3/Modules/posixmodule.c.4~	2025-04-08 15:54:08.000000000 +0200
++++ Python-3.13.3/Modules/posixmodule.c	2025-04-25 23:19:10.932544794 +0200
+@@ -12609,7 +12609,7 @@ static PyObject *
  os_major_impl(PyObject *module, dev_t device)
- /*[clinic end generated code: output=5b3b2589bafb498e input=1e16a4d30c4d4462]*/
+ /*[clinic end generated code: output=4071ffee17647891 input=b1a0a14ec9448229]*/
  {
--    return major(device);
-+    return gnu_dev_major(device);
+-    return major_minor_conv(major(device));
++    return major_minor_conv(gnu_dev_major(device));
  }
  
  
-@@ -8631,7 +8631,7 @@ static unsigned int
+@@ -12626,7 +12626,7 @@ static PyObject *
  os_minor_impl(PyObject *module, dev_t device)
- /*[clinic end generated code: output=5e1a25e630b0157d input=0842c6d23f24c65e]*/
+ /*[clinic end generated code: output=306cb78e3bc5004f input=2f686e463682a9da]*/
  {
--    return minor(device);
-+    return gnu_dev_minor(device);
+-    return major_minor_conv(minor(device));
++    return major_minor_conv(gnu_dev_minor(device));
  }
  
  
