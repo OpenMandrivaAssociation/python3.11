@@ -15,10 +15,10 @@
 %define api %{dirver}
 %define major 1
 %define libname %mklibname python %{api} %{major}
-%define devname %mklibname python -d
-%define staticname %mklibname python -d -s
+%define devname %mklibname python %{api} -d
+%define staticname %mklibname python %{api} -d -s
 %define lib32name %mklib32name python %{api} %{major}
-%define dev32name %mklib32name python -d
+%define dev32name %mklib32name python %{api} -d
 
 %if %{cross_compiling}
 # Because we currently miss libclang_rt.profile-riscv64.a
@@ -37,7 +37,7 @@
 
 # Let's make tkinter optional -- we may not have more obscure
 # stuff like TCL/Tk when bootstrapping a new architecture
-%bcond_without tkinter
+%bcond_with tkinter
 
 # weird stuff
 # pip not available if python package built with pip
@@ -47,7 +47,7 @@
 %bcond_with pip
 
 Summary:	An interpreted, interactive object-oriented programming language
-Name:		python
+Name:		python3.11
 # WARNING
 # When updating to a new major version (e.g. 3.11 to 3.12, not 3.11.1
 # to 3.11.2), make sure you don't break dnf.
